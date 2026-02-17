@@ -1,0 +1,23 @@
+---
+import Layout from "../layouts/Layout.astro";
+import EggsAssembler from "../components/EggsAssembler";
+---
+
+<Layout title="Monte seu Ovo | Catálogo de Páscoa">
+  <div style={{ marginBottom: '1.5rem' }}>
+    <a href="/" style={{ 
+      color: '#e2b05b', 
+      textDecoration: 'none', 
+      fontWeight: 'bold',
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: '0.5rem'
+    }}>
+      ← Voltar para o Início
+    </a>
+  </div>
+  <h2 style={{ color: '#2d1e17', textAlign: 'center', marginBottom: '2rem' }}>
+    Monte seu Ovo
+  </h2>
+  <EggsAssembler client:load />
+</Layout>
