@@ -5,6 +5,6 @@ export type Item = {
   type: string;
   description: string;
   price: string;
-}
+};
 
 export const cart = atom<Item[]>([]);
