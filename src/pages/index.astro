@@ -1,11 +1,39 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import Layout from "../layouts/Layout.astro";
 ---
 
-<Layout>
-	<Welcome />
+<Layout title="Início | Catálogo de Páscoa">
+	<section style={{ textAlign: 'center', padding: '2rem 0' }}>
+    <h2 style={{
+      color: '#2d1e17',
+      fontSize: '2rem',
+      marginBottom: '1rem'
+    }}>
+      Bem-vindo à Emily Confeitaria!
+    </h2>
+
+    <p style={{
+      color: '#555',
+      fontSize: '1.1rem',
+      lineHeight: '1.6',
+      maxWidth: '600px',
+      margin: '0 auto 2rem auto'
+    }}>
+      Nesta Páscoa, preparamos opções deliciosas e artesanais para você presentear quem você ama (ou a si mesmo!).
+      Aqui no nosso catálogo, você pode montar o seu ovo de Páscoa exatamente do seu jeito!
+    </p>
+
+    <a href="/pedido" style={{ 
+      display: 'inline-block', 
+      backgroundColor: '#2d1e17', 
+      color: '#e2b05b', 
+      padding: '1rem 2rem', 
+      textDecoration: 'none', 
+      borderRadius: '8px', 
+      fontWeight: 'bold', 
+      fontSize: '1.2rem'
+    }}>
+      🐰 Montar meu Ovo de Páscoa
+    </a>
+  </section>
 </Layout>
