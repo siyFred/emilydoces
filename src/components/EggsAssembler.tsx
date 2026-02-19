@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+import { addItemToCart } from "../store/cartStore.ts";
+
 const EGG_TYPES = [
   "Ovo de Colher",
   "Ovo Simples",
@@ -141,6 +143,27 @@ export default function EggsAssembler() {
 
   const currentShellOptions =
     selectedType === "Mini Ovos" ? MINI_EGGSHELL_OPT : EGGSHELL_OPT;
+
+  const handleAddToCart = () => {
+    const productName = `${selectedSubtype || selectedType} ${selectedSize ? `(${selectedSize})` : ""}`;
+
+    const details = [
+      shells.length > 0 ? `Cascas: ${shells.join(", ")}` : null,
+      fillings.length > 0 ? `Recheios: ${fillings.join(", ")}` : null,
+      toppings.length > 0 ? `Acompanhamentos: ${toppings.join(", ")}` : null,
+    ]
+      .filter(Boolean)
+      .join(" | ");
+
+    addItemToCart({
+      type: productName,
+      description: details,
+      price: "A Calcular",
+    });
+
+    alert("🎉 Ovo adicionado ao carrinho com sucesso!");
+    resetAll();
+  };
 
   return (
     <div
@@ -372,6 +395,7 @@ export default function EggsAssembler() {
             ✨ Ovo Montado com Sucesso! ✨
           </h3>
           <button
+            onClick={handleAddToCart}
             style={{
               padding: "1rem 2rem",
               backgroundColor: "#e2b05b",

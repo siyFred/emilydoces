@@ -1,5 +1,5 @@
 ---
-import CartButton from "./CartButton.tsx";
+import CartButton from "./CartButton";
 ---
 
 <header
@@ -10,6 +10,7 @@ import CartButton from "./CartButton.tsx";
       Logo Emily Doces
     </h1>
   </div>
-
-  <CartButton client:load />
+  <div>
+    <CartButton client:load />
+  </div>
 </header>
