@@ -541,7 +541,7 @@ export default function EggsAssembler() {
               cursor: toppings.length > 0 ? "pointer" : "not-allowed",
             }}
           >
-            Finalizar Montagem ➔
+            Continuar ➔
           </button>
         </div>
       )}
