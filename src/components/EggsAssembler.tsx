@@ -32,6 +32,18 @@ const SIZES_BY_TYPE: Record<string, string[]> = {
   "Mini Ovos": ["Caixa com 2 unidades", "Caixa com 4 unidades"],
 };
 
+const PRICES: Record<string, Record<string, number>> = {
+  "Ovo de Colher Simples": { "250g": 62.0, "350g": 72.0 },
+  "Ovo de Colher Especial": { "250g": 68.0, "350g": 78.0 },
+  "Ovo de Colher de Guloseimas": { "250g": 70.0, "350g": 80.0 },
+  "Ovo de Colher de Brownie": { "250g": 78.0, "350g": 90.0 },
+  "Ovo Simples": { "250g": 40.0, "350g": 50.0 },
+  "Ovo Trufado de Uma Banda": { "250g": 37.0, "350g": 47.0 },
+  "Ovo Trufado de Duas Bandas": { "250g": 68.0, "350g": 78.0 },
+  "Ovo de Pote": { "250g": 85.0, "350g": 98.5 },
+  "Mini Ovos": { "Caixa com 2 unidades": 20.0, "Caixa com 4 unidades": 40.0 },
+};
+
 const ASSEMBLER_RULES: Record<
   string,
   { cascas: number; recheios: number; acompanhamentos: number }
@@ -206,6 +218,23 @@ export default function EggsAssembler() {
   const currentShellOptions =
     selectedType === "Mini Ovos" ? MINI_EGGSHELL_OPT : EGGSHELL_OPT;
 
+  const currentKey = selectedSubtype || selectedType;
+  let currentPrice = 0;
+
+  if (
+    currentKey &&
+    selectedSize &&
+    PRICES[currentKey] &&
+    PRICES[currentKey][selectedSize]
+  ) {
+    currentPrice = PRICES[currentKey][selectedSize];
+  }
+
+  const formattedCurrentPrice = currentPrice.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+
   const handleAddToCart = () => {
     const productName = `${selectedSubtype || selectedType} ${selectedSize ? `(${selectedSize})` : ""}`;
 
@@ -220,7 +249,7 @@ export default function EggsAssembler() {
     addItemToCart({
       type: productName,
       description: details,
-      price: "A Calcular",
+      price: formattedCurrentPrice,
     });
 
     alert("🎉 Ovo adicionado ao carrinho com sucesso!");
@@ -264,6 +293,18 @@ export default function EggsAssembler() {
                 {selectedSubtype || selectedType}{" "}
                 {selectedSize ? `(${selectedSize})` : ""}
               </h4>
+              {formattedCurrentPrice && (
+                <div
+                  style={{
+                    color: "#2d1e17",
+                    fontWeight: "bold",
+                    fontSize: "0.95rem",
+                    marginTop: "4px",
+                  }}
+                >
+                  {formattedCurrentPrice}
+                </div>
+              )}
               {activeVariation === "Ovo de Colher de Brownie" && (
                 <span
                   style={{
@@ -333,15 +374,26 @@ export default function EggsAssembler() {
         <div>
           <h3 style={titleStyle}>Escolha o tamanho:</h3>
           <div style={gridStyle}>
-            {SIZES_BY_TYPE[selectedSubtype || selectedType!]?.map((size) => (
-              <button
-                key={size}
-                onClick={() => handleSelectSize(size)}
-                style={btnStyleLight}
-              >
-                📏 {size}
-              </button>
-            ))}
+            {SIZES_BY_TYPE[selectedSubtype || selectedType!]?.map((size) => {
+              const priceForThisSize =
+                PRICES[selectedSubtype || selectedType!]?.[size];
+              const priceString = priceForThisSize
+                ? ` - ${priceForThisSize.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}`
+                : "";
+
+              return (
+                <button
+                  key={size}
+                  onClick={() => handleSelectSize(size)}
+                  style={btnStyleLight}
+                >
+                  📏 {size}{" "}
+                  <span style={{ fontWeight: "normal", color: "#666" }}>
+                    {priceString}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
@@ -502,7 +554,7 @@ export default function EggsAssembler() {
               cursor: "pointer",
             }}
           >
-            Adicionar ao Carrinho
+            Adicionar ao Carrinho • {formattedCurrentPrice}
           </button>
         </div>
       )}
