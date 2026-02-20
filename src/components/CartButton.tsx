@@ -3,13 +3,43 @@ import { useStore } from "@nanostores/react";
 import { cart, remItemFromCart } from "../store/cartStore";
 
 export default function CartButton() {
-  const itens = useStore(cart);
+  const items = useStore(cart);
   const [isOpen, setIsOpen] = useState(false);
-  const totalItems = itens.length;
+  const totalItems = items.length;
 
   if (totalItems === 0) return null;
 
   const closeCart = () => setIsOpen(false);
+
+  const handleCheckout = () => {
+    const whatsapp = import.meta.env.PUBLIC_WHATSAPP_NUMBER;
+
+    let orderText =
+      "Olá, Emily Doces! 🐰 Gostaria de finalizar o meu pedido:\n\n";
+    let totalValue = 0;
+
+    items.forEach((item, index) => {
+      const cleanPrice = item.price.replace(/[^\d,-]/g, "").replace(",", ".");
+      totalValue += parseFloat(cleanPrice) || 0;
+
+      orderText += `*${index + 1}. ${item.type}*\n`;
+      orderText += `${item.description.split(" | ").join("\n")}\n`;
+      orderText += `Valor: ${item.price}\n\n`;
+    });
+
+    const formattedTotalValue = totalValue.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    });
+
+    orderText += `*TOTAL DO PEDIDO: ${formattedTotalValue}*\n\n`;
+    orderText += `Aguardo a confirmação e as formas de pagamento!`;
+
+    const message = encodeURIComponent(orderText);
+    const url = `https://wa.me/${whatsapp}?text=${message}`;
+
+    window.open(url, "_blank");
+  };
 
   return (
     <>
@@ -140,7 +170,7 @@ export default function CartButton() {
         </div>
 
         <div style={{ flex: 1, overflowY: "auto", padding: "1.5rem" }}>
-          {itens.map((item) => (
+          {items.map((item) => (
             <div
               key={item.id}
               style={{
@@ -231,6 +261,7 @@ export default function CartButton() {
           }}
         >
           <button
+            onClick={handleCheckout}
             style={{
               width: "100%",
               padding: "1rem",

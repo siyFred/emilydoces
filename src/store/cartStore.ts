@@ -20,9 +20,15 @@ if (typeof window !== "undefined") {
 }
 
 export function addItemToCart(item: Omit<Item, "id">) {
+  const generateId = () => {
+    if (typeof crypto !== "undefined" && crypto.randomUUID) {
+      return crypto.randomUUID();
+    }
+    return Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
+  };
   const newItem = {
     ...item,
-    id: crypto.randomUUID(),
+    id: generateId(),
   };
   cart.set([...cart.get(), newItem]);
 }
