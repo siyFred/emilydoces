@@ -104,13 +104,15 @@ const TOPPING_OPT = [
   "Jujuba",
 ];
 
-const ADDITIONALS = [
-  "Morango",
-  "Nutella",
-  "Kinder Bueno",
-  "Uva",
-  "Ferrero Rocher",
-];
+const ADDITIONALS_PRICES: Record<string, number> = {
+  Morango: 10.0,
+  Nutella: 10.0,
+  "Kinder Bueno": 10.0,
+  "Ferrero Rocher": 10.0,
+  Uva: 6.0,
+};
+
+const ADDITIONAL_OPT = Object.keys(ADDITIONALS_PRICES);
 
 export default function EggsAssembler() {
   const [selectedType, setSelectedType] = useState<string | null>(null);
@@ -121,6 +123,8 @@ export default function EggsAssembler() {
   const [fillings, setFillings] = useState<string[]>([]);
   const [toppings, setToppings] = useState<string[]>([]);
 
+  const [additionals, setAdditionals] = useState<string[]>([]);
+
   const [stepIndex, setStepIndex] = useState(0);
 
   const resetAll = () => {
@@ -130,6 +134,7 @@ export default function EggsAssembler() {
     setShells([]);
     setFillings([]);
     setToppings([]);
+    setAdditionals([]);
     setStepIndex(0);
   };
 
@@ -151,6 +156,7 @@ export default function EggsAssembler() {
       if (rules.cascas > 0) steps.push("shells");
       if (rules.recheios > 0) steps.push("fillings");
       if (rules.acompanhamentos > 0) steps.push("toppings");
+      steps.push("additionals");
       steps.push("finish");
     }
     return steps;
@@ -230,6 +236,13 @@ export default function EggsAssembler() {
     currentPrice = PRICES[currentKey][selectedSize];
   }
 
+  const extraPrice = additionals.reduce(
+    (total, add) => total + (ADDITIONALS_PRICES[add] || 0),
+    0,
+  );
+
+  currentPrice += extraPrice;
+
   const formattedCurrentPrice = currentPrice.toLocaleString("pt-BR", {
     style: "currency",
     currency: "BRL",
@@ -242,6 +255,9 @@ export default function EggsAssembler() {
       shells.length > 0 ? `Cascas: ${shells.join(", ")}` : null,
       fillings.length > 0 ? `Recheios: ${fillings.join(", ")}` : null,
       toppings.length > 0 ? `Acompanhamentos: ${toppings.join(", ")}` : null,
+      additionals.length > 0
+        ? `Adicionais Pagos: ${additionals.join(", ")}`
+        : null,
     ]
       .filter(Boolean)
       .join(" | ");
@@ -526,6 +542,51 @@ export default function EggsAssembler() {
             }}
           >
             Finalizar Montagem ➔
+          </button>
+        </div>
+      )}
+
+      {currentStepName === "additionals" && (
+        <div>
+          <h3 style={titleStyle}>Escolha adicionais:</h3>
+          <p style={subtitleStyle}>
+            OBS.: Esses igredientes são opcionais pagos.
+          </p>
+          <div style={gridStyle}>
+            {ADDITIONAL_OPT.map((opt) => {
+              const isSelected = additionals.includes(opt);
+              const priceStr = `+ R$ ${ADDITIONALS_PRICES[opt].toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+              return (
+                <button
+                  key={opt}
+                  onClick={() => {
+                    if (isSelected)
+                      setAdditionals(additionals.filter((a) => a !== opt));
+                    else setAdditionals([...additionals, opt]);
+                  }}
+                  style={isSelected ? btnStyleSelected : btnStyleLight}
+                >
+                  ✨ {opt}{" "}
+                  <span
+                    style={{
+                      fontWeight: "normal",
+                      color: isSelected ? "#2d1e17" : "#666",
+                    }}
+                  >
+                    ({priceStr})
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          <button
+            onClick={() => setStepIndex(stepIndex + 1)}
+            style={{ ...continueBtnStyle, opacity: 1, cursor: "pointer" }}
+          >
+            {additionals.length > 0
+              ? "Finalizar Montagem ➔"
+              : "Pular e Finalizar ➔"}
           </button>
         </div>
       )}
