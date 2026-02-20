@@ -265,76 +265,78 @@ export default function EggsAssembler() {
         boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "1.5rem",
-          borderBottom: "1px solid #eee",
-          paddingBottom: "1rem",
-        }}
-      >
-        <div style={{ width: "80px" }}>
-          {stepIndex > 0 && currentStepName !== "finish" && (
-            <button
-              onClick={() => setStepIndex(stepIndex - 1)}
-              style={navBtnStyle}
-            >
-              ⬅ Voltar
-            </button>
-          )}
-        </div>
+      {stepIndex > 0 && (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "1.5rem",
+            borderBottom: "1px solid #eee",
+            paddingBottom: "1rem",
+          }}
+        >
+          <div style={{ width: "80px" }}>
+            {stepIndex > 0 && currentStepName !== "finish" && (
+              <button
+                onClick={() => setStepIndex(stepIndex - 1)}
+                style={navBtnStyle}
+              >
+                ⬅ Voltar
+              </button>
+            )}
+          </div>
 
-        <div style={{ flex: 1, textAlign: "center" }}>
-          {selectedType && currentStepName !== "finish" && (
-            <div>
-              <h4 style={{ margin: 0, color: "#2d1e17", fontSize: "1.1rem" }}>
-                {selectedSubtype || selectedType}{" "}
-                {selectedSize ? `(${selectedSize})` : ""}
-              </h4>
-              {formattedCurrentPrice && (
-                <div
-                  style={{
-                    color: "#2d1e17",
-                    fontWeight: "bold",
-                    fontSize: "0.95rem",
-                    marginTop: "4px",
-                  }}
-                >
-                  {formattedCurrentPrice}
-                </div>
-              )}
-              {activeVariation === "Ovo de Colher de Brownie" && (
-                <span
-                  style={{
-                    color: "#e2b05b",
-                    fontSize: "0.8rem",
-                    fontWeight: "bold",
-                  }}
-                >
-                  A casca já é de Brownie!
-                </span>
-              )}
-            </div>
-          )}
-        </div>
+          <div style={{ flex: 1, textAlign: "center" }}>
+            {selectedType && currentStepName !== "finish" && (
+              <div>
+                <h4 style={{ margin: 0, color: "#2d1e17", fontSize: "1.1rem" }}>
+                  {selectedSubtype || selectedType}{" "}
+                  {selectedSize ? `(${selectedSize})` : ""}
+                </h4>
+                {formattedCurrentPrice && (
+                  <div
+                    style={{
+                      color: "#2d1e17",
+                      fontWeight: "bold",
+                      fontSize: "0.95rem",
+                      marginTop: "4px",
+                    }}
+                  >
+                    {formattedCurrentPrice}
+                  </div>
+                )}
+                {activeVariation === "Ovo de Colher de Brownie" && (
+                  <span
+                    style={{
+                      color: "#e2b05b",
+                      fontSize: "0.8rem",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    A casca já é de Brownie!
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
 
-        <div style={{ width: "80px", textAlign: "right" }}>
-          {stepIndex > 0 && currentStepName !== "finish" && (
-            <button
-              onClick={resetAll}
-              style={{
-                ...navBtnStyle,
-                textDecoration: "underline",
-                color: "#e2b05b",
-              }}
-            >
-              Recomeçar
-            </button>
-          )}
+          <div style={{ width: "80px", textAlign: "right" }}>
+            {stepIndex > 0 && currentStepName !== "finish" && (
+              <button
+                onClick={resetAll}
+                style={{
+                  ...navBtnStyle,
+                  textDecoration: "underline",
+                  color: "#e2b05b",
+                }}
+              >
+                Recomeçar
+              </button>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {currentStepName === "type" && (
         <div>
