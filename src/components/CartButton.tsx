@@ -7,9 +7,16 @@ export default function CartButton() {
   const [isOpen, setIsOpen] = useState(false);
   const totalItems = items.length;
 
-  if (totalItems === 0) return null;
-
   const closeCart = () => setIsOpen(false);
+
+  const totalValue = items.reduce((acc, item) => {
+    const clean = item.price.replace(/[^\d,-]/g, "").replace(",", ".");
+    return acc + (parseFloat(clean) || 0);
+  }, 0);
+  const formattedTotal = totalValue.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
 
   const handleCheckout = () => {
     const whatsapp = import.meta.env.PUBLIC_WHATSAPP_NUMBER;
@@ -54,7 +61,8 @@ export default function CartButton() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          color: "#f8f4e6",
+          color: totalItems === 0 ? "rgba(248,244,230,0.35)" : "#f8f4e6",
+          transition: "color 0.2s",
         }}
         aria-label="Abrir carrinho"
       >
@@ -74,26 +82,28 @@ export default function CartButton() {
           <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
         </svg>
 
-        <span
-          style={{
-            position: "absolute",
-            top: "0",
-            right: "0",
-            backgroundColor: "#f8f4e6",
-            color: "#2d1e17",
-            fontSize: "0.75rem",
-            fontWeight: "bold",
-            borderRadius: "50%",
-            width: "14px",
-            height: "14px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            border: "2px solid #2d1e17",
-          }}
-        >
-          {totalItems}
-        </span>
+        {totalItems > 0 && (
+          <span
+            style={{
+              position: "absolute",
+              top: "0",
+              right: "0",
+              backgroundColor: "#f8f4e6",
+              color: "#2d1e17",
+              fontSize: "0.75rem",
+              fontWeight: "bold",
+              borderRadius: "50%",
+              width: "14px",
+              height: "14px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              border: "2px solid #2d1e17",
+            }}
+          >
+            {totalItems}
+          </span>
+        )}
       </button>
 
       <div
@@ -170,6 +180,34 @@ export default function CartButton() {
         </div>
 
         <div style={{ flex: 1, overflowY: "auto", padding: "1.5rem" }}>
+          {totalItems === 0 && (
+            <div
+              style={{
+                textAlign: "center",
+                color: "#999",
+                marginTop: "3rem",
+                fontSize: "0.95rem",
+              }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="48"
+                height="48"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#ccc"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{ display: "block", margin: "0 auto 1rem" }}
+              >
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+              </svg>
+              Seu carrinho está vazio.
+            </div>
+          )}
           {items.map((item) => (
             <div
               key={item.id}
@@ -260,8 +298,26 @@ export default function CartButton() {
             backgroundColor: "#2d1e17",
           }}
         >
+          {totalItems > 0 && (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "1rem",
+                color: "#f8f4e6",
+                fontSize: "0.95rem",
+              }}
+            >
+              <span style={{ fontWeight: "600" }}>Total</span>
+              <span style={{ fontWeight: "800", fontSize: "1.1rem", color: "#e2b05b" }}>
+                {formattedTotal}
+              </span>
+            </div>
+          )}
           <button
             onClick={handleCheckout}
+            disabled={totalItems === 0}
             style={{
               width: "100%",
               padding: "1rem",
@@ -279,6 +335,8 @@ export default function CartButton() {
               letterSpacing: "0.02em",
               boxShadow: "0 4px 16px rgba(45, 30, 23, 0.3)",
               transition: "filter 0.2s, transform 0.15s",
+              opacity: totalItems === 0 ? 0.4 : 1,
+              cursor: totalItems === 0 ? "not-allowed" : "pointer",
             }}
             onMouseEnter={e => (e.currentTarget.style.filter = "brightness(1.08)")}
             onMouseLeave={e => (e.currentTarget.style.filter = "brightness(1)")}

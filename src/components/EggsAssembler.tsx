@@ -129,6 +129,7 @@ export default function EggsAssembler() {
   const [shellSlot, setShellSlot] = useState(0);
   const [fillingSlot, setFillingSlot] = useState(0);
   const [toppingSlot, setToppingSlot] = useState(0);
+  const [toast, setToast] = useState<string | null>(null);
 
   const resetAll = () => {
     setSelectedType(null);
@@ -271,7 +272,8 @@ export default function EggsAssembler() {
       price: formattedCurrentPrice,
     });
 
-    alert("🎉 Ovo adicionado ao carrinho com sucesso!");
+    setToast("Ovo adicionado ao carrinho!");
+    setTimeout(() => setToast(null), 3000);
     resetAll();
   };
 
@@ -282,8 +284,32 @@ export default function EggsAssembler() {
         padding: "1.5rem",
         borderRadius: "24px",
         boxShadow: "0 4px 20px rgba(45, 30, 23, 0.08)",
+        position: "relative",
       }}
     >
+      {toast && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: "2rem",
+            left: "50%",
+            transform: "translateX(-50%)",
+            backgroundColor: "#2d1e17",
+            color: "#f8f4e6",
+            padding: "0.85rem 1.75rem",
+            borderRadius: "50px",
+            fontWeight: "700",
+            fontSize: "0.95rem",
+            boxShadow: "0 4px 20px rgba(45,30,23,0.35)",
+            zIndex: 1000,
+            pointerEvents: "none",
+            whiteSpace: "nowrap",
+            border: "2px solid #e2b05b",
+          }}
+        >
+          ✓ {toast}
+        </div>
+      )}
       {stepIndex > 0 && (
         <div
           style={{
@@ -599,7 +625,7 @@ export default function EggsAssembler() {
         <div>
           <h3 style={titleStyle}>Escolha adicionais:</h3>
           <p style={subtitleStyle}>
-            OBS.: Esses igredientes são opcionais pagos.
+            OBS.: Esses ingredientes são opcionais pagos.
           </p>
           <div style={gridStyle}>
             {ADDITIONAL_OPT.map((opt) => {
