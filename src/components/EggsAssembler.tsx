@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 import { addItemToCart } from "../store/cartStore.ts";
 
@@ -131,6 +131,20 @@ export default function EggsAssembler() {
   const [toppingSlot, setToppingSlot] = useState(0);
   const [toast, setToast] = useState<string | null>(null);
   const [toastLeaving, setToastLeaving] = useState(false);
+
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [contentHeight, setContentHeight] = useState<number | undefined>(undefined);
+
+  useEffect(() => {
+    const el = contentRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => {
+      setContentHeight(el.scrollHeight);
+    });
+    ro.observe(el);
+    setContentHeight(el.scrollHeight);
+    return () => ro.disconnect();
+  }, []);
 
   const resetAll = () => {
     setSelectedType(null);
@@ -328,94 +342,138 @@ export default function EggsAssembler() {
           </div>
         </>
       )}
-      {stepIndex > 0 && currentStepName !== "finish" && (
+      {currentStepName !== "finish" && (
+        <div
+          style={{
+            overflow: "hidden",
+            maxHeight: stepIndex > 0 ? "4rem" : "0",
+            opacity: stepIndex > 0 ? 1 : 0,
+            marginBottom: stepIndex > 0 ? "0.75rem" : "0",
+            transition: "max-height 0.35s ease, opacity 0.3s ease, margin-bottom 0.35s ease",
+          }}
+        >
         <div
           style={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            marginBottom: "1.5rem",
             borderBottom: "1px solid #eee",
-            paddingBottom: "1rem",
+            paddingBottom: "0.75rem",
           }}
         >
           <div style={{ width: "80px" }}>
-            {(stepIndex > 0 || (currentStepName === "shells" && shellSlot > 0) || (currentStepName === "fillings" && fillingSlot > 0) || (currentStepName === "toppings" && toppingSlot > 0)) && currentStepName !== "finish" && (
-              <button
-                onClick={() => {
-                  if (currentStepName === "shells" && shellSlot > 0) {
-                    setShellSlot(shellSlot - 1);
-                  } else if (currentStepName === "fillings" && fillingSlot > 0) {
-                    setFillingSlot(fillingSlot - 1);
-                  } else if (currentStepName === "toppings" && toppingSlot > 0) {
-                    setToppingSlot(toppingSlot - 1);
-                  } else {
-                    const prevStep = stepsArray[stepIndex - 1];
-                    if (prevStep === "shells" && activeRules) setShellSlot(activeRules.cascas - 1);
-                    if (prevStep === "fillings" && activeRules) setFillingSlot(activeRules.recheios - 1);
-                    if (prevStep === "toppings" && activeRules) setToppingSlot(activeRules.acompanhamentos - 1);
-                    setStepIndex(stepIndex - 1);
-                  }
-                }}
-                style={navBtnStyle}
-              >
-                ⬅ Voltar
-              </button>
-            )}
-          </div>
-
-          <div style={{ flex: 1, textAlign: "center" }}>
-            {selectedType && currentStepName !== "finish" && (
-              <div>
-                <h4 style={{ margin: 0, color: "#2d1e17", fontSize: "1.1rem" }}>
-                  {selectedSubtype || selectedType}{" "}
-                  {selectedSize ? `(${selectedSize})` : ""}
-                </h4>
-                {formattedCurrentPrice && (
-                  <div
-                    style={{
-                      color: "#2d1e17",
-                      fontWeight: "bold",
-                      fontSize: "0.95rem",
-                      marginTop: "4px",
-                    }}
-                  >
-                    {formattedCurrentPrice}
-                  </div>
-                )}
-                {activeVariation === "Ovo de Colher de Brownie" && (
-                  <p
-                    style={{
-                      fontSize: "0.8rem",
-                      color: "#666",
-                      margin: "4px 0 0",
-                    }}
-                  >
-                    OBS.: A casca deste ovo já é de Brownie.
-                  </p>
-                )}
-              </div>
-            )}
+            <button
+              onClick={() => {
+                if (currentStepName === "shells" && shellSlot > 0) {
+                  setShellSlot(shellSlot - 1);
+                } else if (currentStepName === "fillings" && fillingSlot > 0) {
+                  setFillingSlot(fillingSlot - 1);
+                } else if (currentStepName === "toppings" && toppingSlot > 0) {
+                  setToppingSlot(toppingSlot - 1);
+                } else {
+                  const prevStep = stepsArray[stepIndex - 1];
+                  if (prevStep === "shells" && activeRules) setShellSlot(activeRules.cascas - 1);
+                  if (prevStep === "fillings" && activeRules) setFillingSlot(activeRules.recheios - 1);
+                  if (prevStep === "toppings" && activeRules) setToppingSlot(activeRules.acompanhamentos - 1);
+                  setStepIndex(stepIndex - 1);
+                }
+              }}
+              style={navBtnStyle}
+            >
+              ⬅ Voltar
+            </button>
           </div>
 
           <div style={{ width: "80px", textAlign: "right" }}>
-            {stepIndex > 0 && currentStepName !== "finish" && (
-              <button
-                onClick={resetAll}
-                style={{
-                  ...navBtnStyle,
-                  textDecoration: "underline",
-                  color: "#e2b05b",
-                }}
-              >
-                Recomeçar
-              </button>
-            )}
+            <button
+              onClick={resetAll}
+              style={{
+                ...navBtnStyle,
+                textDecoration: "underline",
+                color: "#e2b05b",
+              }}
+            >
+              Recomeçar
+            </button>
           </div>
+        </div>
         </div>
       )}
 
-      {currentStepName === "type" && (
+      {currentStepName !== "finish" && (
+        <div
+          style={{
+            overflow: "hidden",
+            maxHeight: selectedType ? "3rem" : "0",
+            opacity: selectedType ? 1 : 0,
+            marginBottom: selectedType ? "1.5rem" : "0",
+            transition: "max-height 0.35s ease, opacity 0.3s ease, margin-bottom 0.35s ease",
+          }}
+        >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "0.5rem",
+            backgroundColor: "#2d1e17",
+            borderRadius: "50px",
+            padding: "0.45rem 1rem",
+            minHeight: "2rem",
+          }}
+        >
+          <span
+            style={{
+              color: "#f8f4e6",
+              fontSize: "0.82rem",
+              fontWeight: "600",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              flex: 1,
+            }}
+          >
+            {selectedSubtype || selectedType}
+            {selectedSize ? ` · ${selectedSize}` : ""}
+          </span>
+          {currentPrice > 0 && (
+            <span
+              style={{
+                color: "#e2b05b",
+                fontSize: "0.85rem",
+                fontWeight: "800",
+                whiteSpace: "nowrap",
+                flexShrink: 0,
+              }}
+            >
+              {formattedCurrentPrice}
+            </span>
+          )}
+          {activeVariation === "Ovo de Colher de Brownie" && (
+            <span
+              style={{
+                color: "#e2b05b",
+                fontSize: "0.75rem",
+                whiteSpace: "nowrap",
+                flexShrink: 0,
+              }}
+            >
+              casca: brownie
+            </span>
+          )}
+        </div>
+        </div>
+      )}
+
+      <div
+          style={{
+            height: contentHeight !== undefined ? contentHeight : "auto",
+            transition: "height 0.35s ease",
+            overflow: "hidden",
+          }}
+        >
+        <div ref={contentRef}>
+        {currentStepName === "type" && (
         <div>
           <h3 style={titleStyle}>Escolha o tipo de ovo:</h3>
           <div style={gridStyle}>
@@ -773,6 +831,8 @@ export default function EggsAssembler() {
           </button>
         </div>
       )}
+        </div>
+        </div>
     </div>
   );
 }
