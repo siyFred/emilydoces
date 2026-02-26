@@ -328,7 +328,7 @@ export default function EggsAssembler() {
           </div>
         </>
       )}
-      {stepIndex > 0 && (
+      {stepIndex > 0 && currentStepName !== "finish" && (
         <div
           style={{
             display: "flex",
@@ -782,7 +782,7 @@ const gridStyle = {
   gridTemplateColumns: "repeat(2, 1fr)",
   gap: "0.75rem",
 };
-const titleStyle = { color: "#2d1e17", marginTop: 0, marginBottom: "0.5rem" };
+const titleStyle = { color: "#2d1e17", marginTop: 0, marginBottom: "1.5rem" };
 const subtitleStyle = {
   fontSize: "0.85rem",
   color: "#666",
