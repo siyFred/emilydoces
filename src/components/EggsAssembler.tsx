@@ -130,6 +130,7 @@ export default function EggsAssembler() {
   const [fillingSlot, setFillingSlot] = useState(0);
   const [toppingSlot, setToppingSlot] = useState(0);
   const [toast, setToast] = useState<string | null>(null);
+  const [toastLeaving, setToastLeaving] = useState(false);
 
   const resetAll = () => {
     setSelectedType(null);
@@ -273,6 +274,8 @@ export default function EggsAssembler() {
     });
 
     setToast("Ovo adicionado ao carrinho!");
+    setToastLeaving(false);
+    setTimeout(() => setToastLeaving(true), 2500);
     setTimeout(() => setToast(null), 3000);
     resetAll();
   };
@@ -288,27 +291,42 @@ export default function EggsAssembler() {
       }}
     >
       {toast && (
-        <div
-          style={{
-            position: "fixed",
-            bottom: "2rem",
-            left: "50%",
-            transform: "translateX(-50%)",
-            backgroundColor: "#2d1e17",
-            color: "#f8f4e6",
-            padding: "0.85rem 1.75rem",
-            borderRadius: "50px",
-            fontWeight: "700",
-            fontSize: "0.95rem",
-            boxShadow: "0 4px 20px rgba(45,30,23,0.35)",
-            zIndex: 1000,
-            pointerEvents: "none",
-            whiteSpace: "nowrap",
-            border: "2px solid #e2b05b",
-          }}
-        >
-          ✓ {toast}
-        </div>
+        <>
+          <style>{`
+            @keyframes toastIn {
+              from { opacity: 0; transform: translateX(-50%) translateY(2rem); }
+              to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+            }
+            @keyframes toastOut {
+              from { opacity: 1; transform: translateX(-50%) translateY(0); }
+              to   { opacity: 0; transform: translateX(-50%) translateY(2rem); }
+            }
+          `}</style>
+          <div
+            style={{
+              position: "fixed",
+              bottom: "2rem",
+              left: "50%",
+              transform: "translateX(-50%)",
+              backgroundColor: "#2d1e17",
+              color: "#f8f4e6",
+              padding: "0.85rem 1.75rem",
+              borderRadius: "50px",
+              fontWeight: "700",
+              fontSize: "0.95rem",
+              boxShadow: "0 8px 32px rgba(45,30,23,0.4)",
+              zIndex: 1000,
+              pointerEvents: "none",
+              whiteSpace: "nowrap",
+              border: "2px solid #e2b05b",
+              animation: toastLeaving
+                ? "toastOut 0.5s cubic-bezier(0.4, 0, 0.6, 1) forwards"
+                : "toastIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
+            }}
+          >
+            ✓ {toast}
+          </div>
+        </>
       )}
       {stepIndex > 0 && (
         <div
