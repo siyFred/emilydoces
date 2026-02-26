@@ -3,14 +3,40 @@ import CartButton from "./CartButton";
 ---
 
 <header
-  style="background-color:#2d1e17; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; color: #fff;"
+  style={{
+    display: "grid",
+    gridTemplateColumns: "1fr auto 1fr",
+    alignItems: "center",
+    padding: "0.2rem 2rem" /* Um pouco mais de espaço nas laterais */,
+    backgroundColor: "#2d1e17",
+    borderBottom: "2px solid #e2b05b",
+    width: "100%",
+    boxSizing: "border-box",
+  }}
 >
-  <div>
-    <h1 style="margin: 0; fontSize: 1.5rem; color: #e2b05b;">
-      Logo Emily Doces
-    </h1>
+  <div></div>
+  <div
+    style={{
+      display: "flex",
+      justifySelf: "center",
+    }}
+  >
+    <a href="/" style={{ display: "block" }}>
+      <img
+        src="logo.png"
+        alt="Logo Emily Doces"
+        class="header-logo"
+        style={{
+          height: "85px",
+          width: "auto",
+          display: "block",
+          marginTop: "5px",
+          marginRight: "16px",
+        }}
+      />
+    </a>
   </div>
-  <div>
+  <div style={{ display: "flex", justifySelf: "end" }}>
     <CartButton client:load />
   </div>
 </header>
