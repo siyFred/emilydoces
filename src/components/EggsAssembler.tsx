@@ -366,15 +366,15 @@ export default function EggsAssembler() {
                   </div>
                 )}
                 {activeVariation === "Ovo de Colher de Brownie" && (
-                  <span
+                  <p
                     style={{
-                      color: "#e2b05b",
                       fontSize: "0.8rem",
-                      fontWeight: "bold",
+                      color: "#666",
+                      margin: "4px 0 0",
                     }}
                   >
-                    A casca já é de Brownie!
-                  </span>
+                    OBS.: A casca deste ovo já é de Brownie.
+                  </p>
                 )}
               </div>
             )}
@@ -760,9 +760,9 @@ export default function EggsAssembler() {
 }
 
 const gridStyle = {
-  display: "flex",
-  flexDirection: "column" as const,
-  gap: "0.8rem",
+  display: "grid",
+  gridTemplateColumns: "repeat(2, 1fr)",
+  gap: "0.75rem",
 };
 const titleStyle = { color: "#2d1e17", marginTop: 0, marginBottom: "0.5rem" };
 const subtitleStyle = {
