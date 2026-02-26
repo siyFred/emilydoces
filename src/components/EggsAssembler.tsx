@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 import { addItemToCart } from "../store/cartStore.ts";
 
@@ -126,6 +126,25 @@ export default function EggsAssembler() {
   const [additionals, setAdditionals] = useState<string[]>([]);
 
   const [stepIndex, setStepIndex] = useState(0);
+  const [shellSlot, setShellSlot] = useState(0);
+  const [fillingSlot, setFillingSlot] = useState(0);
+  const [toppingSlot, setToppingSlot] = useState(0);
+  const [toast, setToast] = useState<string | null>(null);
+  const [toastLeaving, setToastLeaving] = useState(false);
+
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [contentHeight, setContentHeight] = useState<number | undefined>(undefined);
+
+  useEffect(() => {
+    const el = contentRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => {
+      setContentHeight(el.scrollHeight);
+    });
+    ro.observe(el);
+    setContentHeight(el.scrollHeight);
+    return () => ro.disconnect();
+  }, []);
 
   const resetAll = () => {
     setSelectedType(null);
@@ -136,6 +155,9 @@ export default function EggsAssembler() {
     setToppings([]);
     setAdditionals([]);
     setStepIndex(0);
+    setShellSlot(0);
+    setFillingSlot(0);
+    setToppingSlot(0);
   };
 
   const getRequiredSteps = () => {
@@ -179,7 +201,6 @@ export default function EggsAssembler() {
       setToppings([]);
     }
     setSelectedType(type);
-    setStepIndex(stepIndex + 1);
   };
 
   const handleSelectSubtype = (sub: string) => {
@@ -190,7 +211,6 @@ export default function EggsAssembler() {
       setToppings([]);
     }
     setSelectedSubtype(sub);
-    setStepIndex(stepIndex + 1);
   };
 
   const handleSelectSize = (size: string) => {
@@ -200,7 +220,6 @@ export default function EggsAssembler() {
       setToppings([]);
     }
     setSelectedSize(size);
-    setStepIndex(stepIndex + 1);
   };
 
   const handleToggleItem = (
@@ -268,93 +287,193 @@ export default function EggsAssembler() {
       price: formattedCurrentPrice,
     });
 
-    alert("🎉 Ovo adicionado ao carrinho com sucesso!");
+    setToast("Ovo adicionado ao carrinho!");
+    setToastLeaving(false);
+    setTimeout(() => setToastLeaving(true), 2500);
+    setTimeout(() => setToast(null), 3000);
     resetAll();
   };
 
   return (
     <div
       style={{
-        backgroundColor: "#fff",
+        backgroundColor: "rgba(255, 255, 255, 0.75)",
         padding: "1.5rem",
-        borderRadius: "8px",
-        boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+        borderRadius: "24px",
+        boxShadow: "0 4px 20px rgba(45, 30, 23, 0.08)",
+        position: "relative",
       }}
     >
-      {stepIndex > 0 && (
+      {toast && (
+        <>
+          <style>{`
+            @keyframes toastIn {
+              from { opacity: 0; transform: translateX(-50%) translateY(2rem); }
+              to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+            }
+            @keyframes toastOut {
+              from { opacity: 1; transform: translateX(-50%) translateY(0); }
+              to   { opacity: 0; transform: translateX(-50%) translateY(2rem); }
+            }
+          `}</style>
+          <div
+            style={{
+              position: "fixed",
+              bottom: "2rem",
+              left: "50%",
+              transform: "translateX(-50%)",
+              backgroundColor: "#2d1e17",
+              color: "#f8f4e6",
+              padding: "0.85rem 1.75rem",
+              borderRadius: "50px",
+              fontWeight: "700",
+              fontSize: "0.95rem",
+              boxShadow: "0 8px 32px rgba(45,30,23,0.4)",
+              zIndex: 1000,
+              pointerEvents: "none",
+              whiteSpace: "nowrap",
+              border: "2px solid #e2b05b",
+              animation: toastLeaving
+                ? "toastOut 0.5s cubic-bezier(0.4, 0, 0.6, 1) forwards"
+                : "toastIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
+            }}
+          >
+            ✓ {toast}
+          </div>
+        </>
+      )}
+      {currentStepName !== "finish" && (
+        <div
+          style={{
+            overflow: "hidden",
+            maxHeight: stepIndex > 0 ? "4rem" : "0",
+            opacity: stepIndex > 0 ? 1 : 0,
+            marginBottom: stepIndex > 0 ? "0.75rem" : "0",
+            transition: "max-height 0.35s ease, opacity 0.3s ease, margin-bottom 0.35s ease",
+          }}
+        >
         <div
           style={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            marginBottom: "1.5rem",
             borderBottom: "1px solid #eee",
-            paddingBottom: "1rem",
+            paddingBottom: "0.75rem",
           }}
         >
           <div style={{ width: "80px" }}>
-            {stepIndex > 0 && currentStepName !== "finish" && (
-              <button
-                onClick={() => setStepIndex(stepIndex - 1)}
-                style={navBtnStyle}
-              >
-                ⬅ Voltar
-              </button>
-            )}
-          </div>
-
-          <div style={{ flex: 1, textAlign: "center" }}>
-            {selectedType && currentStepName !== "finish" && (
-              <div>
-                <h4 style={{ margin: 0, color: "#2d1e17", fontSize: "1.1rem" }}>
-                  {selectedSubtype || selectedType}{" "}
-                  {selectedSize ? `(${selectedSize})` : ""}
-                </h4>
-                {formattedCurrentPrice && (
-                  <div
-                    style={{
-                      color: "#2d1e17",
-                      fontWeight: "bold",
-                      fontSize: "0.95rem",
-                      marginTop: "4px",
-                    }}
-                  >
-                    {formattedCurrentPrice}
-                  </div>
-                )}
-                {activeVariation === "Ovo de Colher de Brownie" && (
-                  <span
-                    style={{
-                      color: "#e2b05b",
-                      fontSize: "0.8rem",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    A casca já é de Brownie!
-                  </span>
-                )}
-              </div>
-            )}
+            <button
+              onClick={() => {
+                if (currentStepName === "shells" && shellSlot > 0) {
+                  setShellSlot(shellSlot - 1);
+                } else if (currentStepName === "fillings" && fillingSlot > 0) {
+                  setFillingSlot(fillingSlot - 1);
+                } else if (currentStepName === "toppings" && toppingSlot > 0) {
+                  setToppingSlot(toppingSlot - 1);
+                } else {
+                  const prevStep = stepsArray[stepIndex - 1];
+                  if (prevStep === "shells" && activeRules) setShellSlot(activeRules.cascas - 1);
+                  if (prevStep === "fillings" && activeRules) setFillingSlot(activeRules.recheios - 1);
+                  if (prevStep === "toppings" && activeRules) setToppingSlot(activeRules.acompanhamentos - 1);
+                  setStepIndex(stepIndex - 1);
+                }
+              }}
+              style={navBtnStyle}
+            >
+              ⬅ Voltar
+            </button>
           </div>
 
           <div style={{ width: "80px", textAlign: "right" }}>
-            {stepIndex > 0 && currentStepName !== "finish" && (
-              <button
-                onClick={resetAll}
-                style={{
-                  ...navBtnStyle,
-                  textDecoration: "underline",
-                  color: "#e2b05b",
-                }}
-              >
-                Recomeçar
-              </button>
-            )}
+            <button
+              onClick={resetAll}
+              style={{
+                ...navBtnStyle,
+                textDecoration: "underline",
+                color: "#e2b05b",
+              }}
+            >
+              Recomeçar
+            </button>
           </div>
+        </div>
         </div>
       )}
 
-      {currentStepName === "type" && (
+      {currentStepName !== "finish" && (
+        <div
+          style={{
+            overflow: "hidden",
+            maxHeight: selectedType ? "3rem" : "0",
+            opacity: selectedType ? 1 : 0,
+            marginBottom: selectedType ? "1.5rem" : "0",
+            transition: "max-height 0.35s ease, opacity 0.3s ease, margin-bottom 0.35s ease",
+          }}
+        >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "0.5rem",
+            backgroundColor: "#2d1e17",
+            borderRadius: "50px",
+            padding: "0.45rem 1rem",
+            minHeight: "2rem",
+          }}
+        >
+          <span
+            style={{
+              color: "#f8f4e6",
+              fontSize: "0.82rem",
+              fontWeight: "600",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              flex: 1,
+            }}
+          >
+            {selectedSubtype || selectedType}
+            {selectedSize ? ` · ${selectedSize}` : ""}
+          </span>
+          {currentPrice > 0 && (
+            <span
+              style={{
+                color: "#e2b05b",
+                fontSize: "0.85rem",
+                fontWeight: "800",
+                whiteSpace: "nowrap",
+                flexShrink: 0,
+              }}
+            >
+              {formattedCurrentPrice}
+            </span>
+          )}
+          {activeVariation === "Ovo de Colher de Brownie" && (
+            <span
+              style={{
+                color: "#e2b05b",
+                fontSize: "0.75rem",
+                whiteSpace: "nowrap",
+                flexShrink: 0,
+              }}
+            >
+              casca: brownie
+            </span>
+          )}
+        </div>
+        </div>
+      )}
+
+      <div
+          style={{
+            height: contentHeight !== undefined ? contentHeight : "auto",
+            transition: "height 0.35s ease",
+            overflow: "hidden",
+          }}
+        >
+        <div ref={contentRef}>
+        {currentStepName === "type" && (
         <div>
           <h3 style={titleStyle}>Escolha o tipo de ovo:</h3>
           <div style={gridStyle}>
@@ -362,12 +481,23 @@ export default function EggsAssembler() {
               <button
                 key={type}
                 onClick={() => handleSelectType(type)}
-                style={btnStyleLight}
+                style={selectedType === type ? btnStyleSelected : btnStyleLight}
               >
-                🍫 {type}
+                {type}
               </button>
             ))}
           </div>
+          <button
+            onClick={() => setStepIndex(stepIndex + 1)}
+            disabled={!selectedType}
+            style={{
+              ...continueBtnStyle,
+              opacity: selectedType ? 1 : 0.5,
+              cursor: selectedType ? "pointer" : "not-allowed",
+            }}
+          >
+            Continuar ➔
+          </button>
         </div>
       )}
 
@@ -379,12 +509,23 @@ export default function EggsAssembler() {
               <button
                 key={sub}
                 onClick={() => handleSelectSubtype(sub)}
-                style={btnStyleLight}
+                style={selectedSubtype === sub ? btnStyleSelected : btnStyleLight}
               >
-                🥄 {sub}
+                {sub}
               </button>
             ))}
           </div>
+          <button
+            onClick={() => setStepIndex(stepIndex + 1)}
+            disabled={!selectedSubtype}
+            style={{
+              ...continueBtnStyle,
+              opacity: selectedSubtype ? 1 : 0.5,
+              cursor: selectedSubtype ? "pointer" : "not-allowed",
+            }}
+          >
+            Continuar ➔
+          </button>
         </div>
       )}
 
@@ -403,57 +544,69 @@ export default function EggsAssembler() {
                 <button
                   key={size}
                   onClick={() => handleSelectSize(size)}
-                  style={btnStyleLight}
+                  style={selectedSize === size ? btnStyleSelected : btnStyleLight}
                 >
-                  📏 {size}{" "}
-                  <span style={{ fontWeight: "normal", color: "#666" }}>
+                  {size}{" "}
+                  <span style={{ fontWeight: "normal", color: selectedSize === size ? "#2d1e17" : "#666" }}>
                     {priceString}
                   </span>
                 </button>
               );
             })}
           </div>
+          <button
+            onClick={() => setStepIndex(stepIndex + 1)}
+            disabled={!selectedSize}
+            style={{
+              ...continueBtnStyle,
+              opacity: selectedSize ? 1 : 0.5,
+              cursor: selectedSize ? "pointer" : "not-allowed",
+            }}
+          >
+            Continuar ➔
+          </button>
         </div>
       )}
 
       {currentStepName === "shells" && activeRules && (
         <div>
           <h3 style={titleStyle}>
-            Escolha até {activeRules.cascas} casca
-            {activeRules.cascas > 1 ? "s" : ""}:
+            {activeRules.cascas > 1
+              ? `Escolha a casca (${shellSlot + 1} de ${activeRules.cascas}):`
+              : "Escolha a casca:"}
           </h3>
-          <p style={subtitleStyle}>
-            Selecionadas: {shells.length} de {activeRules.cascas}
-          </p>
           <div style={gridStyle}>
             {currentShellOptions.map((opt) => (
               <button
                 key={opt}
-                onClick={() =>
-                  handleToggleItem(
-                    opt,
-                    shells,
-                    setShells,
-                    activeRules.cascas,
-                    "casca",
-                  )
-                }
-                style={shells.includes(opt) ? btnStyleSelected : btnStyleLight}
+                onClick={() => {
+                  const next = [...shells];
+                  next[shellSlot] = opt;
+                  setShells(next);
+                }}
+                style={shells[shellSlot] === opt ? btnStyleSelected : btnStyleLight}
               >
-                🥚 {opt}
+                {opt}
               </button>
             ))}
           </div>
           <button
-            onClick={() => setStepIndex(stepIndex + 1)}
-            disabled={shells.length === 0}
+            onClick={() => {
+              if (shellSlot < activeRules.cascas - 1) {
+                setShellSlot(shellSlot + 1);
+              } else {
+                setShellSlot(0);
+                setStepIndex(stepIndex + 1);
+              }
+            }}
+            disabled={!shells[shellSlot]}
             style={{
               ...continueBtnStyle,
-              opacity: shells.length > 0 ? 1 : 0.5,
-              cursor: shells.length > 0 ? "pointer" : "not-allowed",
+              opacity: shells[shellSlot] ? 1 : 0.5,
+              cursor: shells[shellSlot] ? "pointer" : "not-allowed",
             }}
           >
-            Continuar ➔
+            {shellSlot < activeRules.cascas - 1 ? "Próxima Casca ➔" : "Continuar ➔"}
           </button>
         </div>
       )}
@@ -461,43 +614,42 @@ export default function EggsAssembler() {
       {currentStepName === "fillings" && activeRules && (
         <div>
           <h3 style={titleStyle}>
-            Escolha até {activeRules.recheios} recheio
-            {activeRules.recheios > 1 ? "s" : ""}:
+            {activeRules.recheios > 1
+              ? `Escolha o recheio (${fillingSlot + 1} de ${activeRules.recheios}):`
+              : "Escolha o recheio:"}
           </h3>
-          <p style={subtitleStyle}>
-            Selecionados: {fillings.length} de {activeRules.recheios}
-          </p>
           <div style={gridStyle}>
             {FILLING_OPT.map((opt) => (
               <button
                 key={opt}
-                onClick={() =>
-                  handleToggleItem(
-                    opt,
-                    fillings,
-                    setFillings,
-                    activeRules.recheios,
-                    "recheio",
-                  )
-                }
-                style={
-                  fillings.includes(opt) ? btnStyleSelected : btnStyleLight
-                }
+                onClick={() => {
+                  const next = [...fillings];
+                  next[fillingSlot] = opt;
+                  setFillings(next);
+                }}
+                style={fillings[fillingSlot] === opt ? btnStyleSelected : btnStyleLight}
               >
-                🍯 {opt}
+                {opt}
               </button>
             ))}
           </div>
           <button
-            onClick={() => setStepIndex(stepIndex + 1)}
-            disabled={fillings.length === 0}
+            onClick={() => {
+              if (fillingSlot < activeRules.recheios - 1) {
+                setFillingSlot(fillingSlot + 1);
+              } else {
+                setFillingSlot(0);
+                setStepIndex(stepIndex + 1);
+              }
+            }}
+            disabled={!fillings[fillingSlot]}
             style={{
               ...continueBtnStyle,
-              opacity: fillings.length > 0 ? 1 : 0.5,
-              cursor: fillings.length > 0 ? "pointer" : "not-allowed",
+              opacity: fillings[fillingSlot] ? 1 : 0.5,
+              cursor: fillings[fillingSlot] ? "pointer" : "not-allowed",
             }}
           >
-            Continuar ➔
+            {fillingSlot < activeRules.recheios - 1 ? "Próximo Recheio ➔" : "Continuar ➔"}
           </button>
         </div>
       )}
@@ -505,43 +657,42 @@ export default function EggsAssembler() {
       {currentStepName === "toppings" && activeRules && (
         <div>
           <h3 style={titleStyle}>
-            Escolha até {activeRules.acompanhamentos} acompanhamento
-            {activeRules.acompanhamentos > 1 ? "s" : ""}:
+            {activeRules.acompanhamentos > 1
+              ? `Escolha o acompanhamento (${toppingSlot + 1} de ${activeRules.acompanhamentos}):`
+              : "Escolha o acompanhamento:"}
           </h3>
-          <p style={subtitleStyle}>
-            Selecionados: {toppings.length} de {activeRules.acompanhamentos}
-          </p>
           <div style={gridStyle}>
             {TOPPING_OPT.map((opt) => (
               <button
                 key={opt}
-                onClick={() =>
-                  handleToggleItem(
-                    opt,
-                    toppings,
-                    setToppings,
-                    activeRules.acompanhamentos,
-                    "acompanhamento",
-                  )
-                }
-                style={
-                  toppings.includes(opt) ? btnStyleSelected : btnStyleLight
-                }
+                onClick={() => {
+                  const next = [...toppings];
+                  next[toppingSlot] = opt;
+                  setToppings(next);
+                }}
+                style={toppings[toppingSlot] === opt ? btnStyleSelected : btnStyleLight}
               >
-                🍓 {opt}
+                {opt}
               </button>
             ))}
           </div>
           <button
-            onClick={() => setStepIndex(stepIndex + 1)}
-            disabled={toppings.length === 0}
+            onClick={() => {
+              if (toppingSlot < activeRules.acompanhamentos - 1) {
+                setToppingSlot(toppingSlot + 1);
+              } else {
+                setToppingSlot(0);
+                setStepIndex(stepIndex + 1);
+              }
+            }}
+            disabled={!toppings[toppingSlot]}
             style={{
               ...continueBtnStyle,
-              opacity: toppings.length > 0 ? 1 : 0.5,
-              cursor: toppings.length > 0 ? "pointer" : "not-allowed",
+              opacity: toppings[toppingSlot] ? 1 : 0.5,
+              cursor: toppings[toppingSlot] ? "pointer" : "not-allowed",
             }}
           >
-            Continuar ➔
+            {toppingSlot < activeRules.acompanhamentos - 1 ? "Próximo Acompanhamento ➔" : "Continuar ➔"}
           </button>
         </div>
       )}
@@ -550,7 +701,7 @@ export default function EggsAssembler() {
         <div>
           <h3 style={titleStyle}>Escolha adicionais:</h3>
           <p style={subtitleStyle}>
-            OBS.: Esses igredientes são opcionais pagos.
+            OBS.: Esses ingredientes são opcionais pagos.
           </p>
           <div style={gridStyle}>
             {ADDITIONAL_OPT.map((opt) => {
@@ -566,7 +717,7 @@ export default function EggsAssembler() {
                   }}
                   style={isSelected ? btnStyleSelected : btnStyleLight}
                 >
-                  ✨ {opt}{" "}
+                  {opt}{" "}
                   <span
                     style={{
                       fontWeight: "normal",
@@ -592,45 +743,106 @@ export default function EggsAssembler() {
       )}
 
       {currentStepName === "finish" && (
-        <div
-          style={{
-            textAlign: "center",
-            padding: "2rem 0",
-            backgroundColor: "#f8f4e6",
-            borderRadius: "8px",
-            marginTop: "1rem",
-          }}
-        >
-          <h3 style={{ color: "#2d1e17", margin: "0 0 1rem 0" }}>
-            ✨ Ovo Montado com Sucesso! ✨
+        <div style={{ textAlign: "center" }}>
+          <h3 style={{ color: "#2d1e17", margin: "0 0 0.25rem 0", fontSize: "1.4rem" }}>
+            Ovo Montado!
           </h3>
+          <p style={{ color: "#888", fontSize: "0.85rem", margin: "0 0 1.5rem 0" }}>
+            Confira os detalhes abaixo
+          </p>
+
+          <div style={{
+            backgroundColor: "#fff",
+            border: "1px solid #e8dfce",
+            borderRadius: "12px",
+            overflow: "hidden",
+            marginBottom: "1.5rem",
+            textAlign: "left",
+          }}>
+            {/* Nome e preço */}
+            <div style={{
+              backgroundColor: "#2d1e17",
+              padding: "0.9rem 1.2rem",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}>
+              <span style={{ color: "#f8f4e6", fontWeight: "bold", fontSize: "1rem" }}>
+                {selectedSubtype || selectedType}
+                {selectedSize ? ` (${selectedSize})` : ""}
+              </span>
+              <span style={{ color: "#e2b05b", fontWeight: "bold", fontSize: "1rem" }}>
+                {formattedCurrentPrice}
+              </span>
+            </div>
+
+            {/* Detalhes */}
+            <div style={{ padding: "0.25rem 0" }}>
+              {shells.length > 0 && (
+                <div style={summaryRowStyle}>
+                  <span style={summaryLabelStyle}>
+                    {shells.length > 1 ? "Cascas" : "Casca"}
+                  </span>
+                  <span style={summaryValueStyle}>{shells.join(" · ")}</span>
+                </div>
+              )}
+              {fillings.length > 0 && (
+                <div style={summaryRowStyle}>
+                  <span style={summaryLabelStyle}>
+                    {fillings.length > 1 ? "Recheios" : "Recheio"}
+                  </span>
+                  <span style={summaryValueStyle}>{fillings.join(" · ")}</span>
+                </div>
+              )}
+              {toppings.length > 0 && (
+                <div style={summaryRowStyle}>
+                  <span style={summaryLabelStyle}>
+                    {toppings.length > 1 ? "Acompanhamentos" : "Acompanhamento"}
+                  </span>
+                  <span style={summaryValueStyle}>{toppings.join(" · ")}</span>
+                </div>
+              )}
+              {additionals.length > 0 && (
+                <div style={{ ...summaryRowStyle, borderBottom: "none" }}>
+                  <span style={summaryLabelStyle}>Adicionais</span>
+                  <span style={summaryValueStyle}>{additionals.join(" · ")}</span>
+                </div>
+              )}
+            </div>
+          </div>
+
           <button
             onClick={handleAddToCart}
             style={{
+              width: "100%",
               padding: "1rem 2rem",
               backgroundColor: "#e2b05b",
               color: "#2d1e17",
               border: "none",
-              borderRadius: "5px",
-              fontWeight: "bold",
-              fontSize: "1.1rem",
+              borderRadius: "50px",
+              fontWeight: "800",
+              fontSize: "1.05rem",
               cursor: "pointer",
+              boxShadow: "0 4px 16px rgba(45, 30, 23, 0.2)",
+              transition: "filter 0.2s",
             }}
           >
-            Adicionar ao Carrinho • {formattedCurrentPrice}
+            Adicionar ao Carrinho · {formattedCurrentPrice}
           </button>
         </div>
       )}
+        </div>
+        </div>
     </div>
   );
 }
 
 const gridStyle = {
-  display: "flex",
-  flexDirection: "column" as const,
-  gap: "0.5rem",
+  display: "grid",
+  gridTemplateColumns: "repeat(2, 1fr)",
+  gap: "0.75rem",
 };
-const titleStyle = { color: "#2d1e17", marginTop: 0, marginBottom: "0.5rem" };
+const titleStyle = { color: "#2d1e17", marginTop: 0, marginBottom: "1.5rem" };
 const subtitleStyle = {
   fontSize: "0.85rem",
   color: "#666",
@@ -639,26 +851,31 @@ const subtitleStyle = {
 };
 
 const btnStyleLight = {
-  padding: "1rem",
-  backgroundColor: "#fff",
-  border: "1px solid #ccc",
-  borderRadius: "5px",
-  cursor: "pointer",
-  fontWeight: "bold",
-  color: "#333",
-  textAlign: "left" as const,
-  transition: "0.2s",
-};
-const btnStyleSelected = {
-  padding: "1rem",
-  backgroundColor: "#e2b05b",
-  border: "2px solid #2d1e17",
-  borderRadius: "5px",
+  padding: "0.9rem 1.2rem 0.9rem 1rem",
+  backgroundColor: "rgba(255, 255, 255, 0.6)",
+  border: "1px solid #e8dfce",
+  borderLeft: "3px solid #e2b05b",
+  borderRadius: "8px",
   cursor: "pointer",
   fontWeight: "bold",
   color: "#2d1e17",
   textAlign: "left" as const,
-  transition: "0.2s",
+  transition: "background-color 0.2s, border-color 0.2s",
+  boxShadow: "0 2px 4px rgba(45, 30, 23, 0.04)",
+};
+
+const btnStyleSelected = {
+  padding: "0.9rem 1.2rem 0.9rem 1rem",
+  backgroundColor: "#e2b05b",
+  border: "1px solid #c9922a",
+  borderLeft: "3px solid #2d1e17",
+  borderRadius: "8px",
+  cursor: "pointer",
+  fontWeight: "bold",
+  color: "#2d1e17",
+  textAlign: "left" as const,
+  transition: "background-color 0.2s, border-color 0.2s",
+  boxShadow: "0 2px 6px rgba(45, 30, 23, 0.12)",
 };
 const navBtnStyle = {
   background: "none",
@@ -674,9 +891,35 @@ const continueBtnStyle = {
   backgroundColor: "#e2b05b",
   color: "#2d1e17",
   border: "none",
-  borderRadius: "5px",
+  borderRadius: "50px",
   fontWeight: "bold",
   fontSize: "1.1rem",
   marginTop: "1.5rem",
   transition: "opacity 0.2s",
+};
+
+const summaryRowStyle: React.CSSProperties = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "flex-start",
+  gap: "1rem",
+  padding: "0.75rem 1.2rem",
+  borderBottom: "1px solid #f0ebe0",
+};
+
+const summaryLabelStyle: React.CSSProperties = {
+  fontSize: "0.8rem",
+  fontWeight: "700",
+  color: "#999",
+  textTransform: "uppercase",
+  letterSpacing: "0.05em",
+  whiteSpace: "nowrap",
+  paddingTop: "1px",
+};
+
+const summaryValueStyle: React.CSSProperties = {
+  fontSize: "0.95rem",
+  color: "#2d1e17",
+  fontWeight: "600",
+  textAlign: "right",
 };

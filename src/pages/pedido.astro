@@ -4,23 +4,27 @@ import EggsAssembler from "../components/EggsAssembler";
 ---
 
 <Layout title="Monte seu Ovo | Catálogo de Páscoa">
-  <div style={{ marginBottom: "1.5rem" }}>
-    <a
-      href="/"
-      style={{
-        color: "#e2b05b",
-        textDecoration: "none",
-        fontWeight: "bold",
-        display: "inline-flex",
-        alignItems: "center",
-        gap: "0.5rem",
-      }}
-    >
-      ← Voltar para o Início
-    </a>
-  </div>
-  <h2 style={{ color: "#2d1e17", textAlign: "center", marginBottom: "2rem" }}>
-    Monte seu Ovo
-  </h2>
+  <a href="/" class="back-link">← Voltar para o Início</a>
   <EggsAssembler client:load />
 </Layout>
+
+<style>
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #2d1e17;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.9rem;
+    opacity: 0.75;
+    transition: opacity 0.2s, gap 0.2s;
+    margin-bottom: 1.5rem;
+  }
+  .back-link:hover {
+    opacity: 1;
+    gap: 0.65rem;
+  }
+
+
+</style>
