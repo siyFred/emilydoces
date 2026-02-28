@@ -668,9 +668,9 @@ export default function EggsAssembler() {
         <div>
           <h3 style={titleStyle}>Escolha o tamanho:</h3>
           <div style={gridStyle}>
-            {SIZES_BY_TYPE[currentKey]?.map((size) => {
+            {currentKey && SIZES_BY_TYPE[currentKey]?.map((size) => {
               const priceForThisSize =
-                PRICES[currentKey]?.[size];
+                currentKey && PRICES[currentKey]?.[size];
               const priceString = priceForThisSize
                 ? ` - ${priceForThisSize.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}`
                 : "";
