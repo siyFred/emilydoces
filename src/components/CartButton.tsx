@@ -1,11 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useStore } from "@nanostores/react";
 import { cart, remItemFromCart } from "../store/cartStore";
 
 export default function CartButton() {
   const items = useStore(cart);
-  const [isOpen, setIsOpen] = useState(false);
   const totalItems = items.length;
+  const [isOpen, setIsOpen] = useState(false);
+  const [customerName, setCustomerName] = useState("");
+  const [bumping, setBumping] = useState(false);
+  const prevCount = useRef(totalItems);
+
+  useEffect(() => {
+    if (totalItems > prevCount.current) {
+      setBumping(true);
+      setTimeout(() => setBumping(false), 850);
+    }
+    prevCount.current = totalItems;
+  }, [totalItems]);
 
   const closeCart = () => setIsOpen(false);
 
@@ -23,6 +34,11 @@ export default function CartButton() {
 
     let orderText =
       "Olá, Emily Doces! 🐰 Gostaria de finalizar o meu pedido:\n\n";
+
+    if (customerName.trim()) {
+      orderText += `*Nome:* ${customerName.trim()}\n\n`;
+    }
+
     let totalValue = 0;
 
     items.forEach((item, index) => {
@@ -50,6 +66,15 @@ export default function CartButton() {
 
   return (
     <>
+      <style>{`
+        @keyframes cartBump {
+          0%   { transform: scale(1) rotate(0deg); }
+          20%  { transform: scale(1.28) rotate(-8deg); }
+          45%  { transform: scale(1.2) rotate(6deg); }
+          70%  { transform: scale(1.1) rotate(-3deg); }
+          100% { transform: scale(1) rotate(0deg); }
+        }
+      `}</style>
       <button
         onClick={() => setIsOpen(true)}
         style={{
@@ -76,6 +101,10 @@ export default function CartButton() {
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
+          style={{
+            animation: bumping ? "cartBump 0.85s ease-in-out" : "none",
+            transformOrigin: "center",
+          }}
         >
           <circle cx="9" cy="21" r="1"></circle>
           <circle cx="20" cy="21" r="1"></circle>
@@ -299,6 +328,26 @@ export default function CartButton() {
           }}
         >
           {totalItems > 0 && (
+            <>
+              <input
+                type="text"
+                placeholder="Seu nome (opcional)"
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "0.65rem 1rem",
+                  borderRadius: "50px",
+                  border: "1px solid rgba(248,244,230,0.2)",
+                  backgroundColor: "rgba(255,255,255,0.08)",
+                  color: "#f8f4e6",
+                  fontSize: "0.9rem",
+                  outline: "none",
+                  marginBottom: "0.85rem",
+                  boxSizing: "border-box" as const,
+                  fontFamily: "inherit",
+                }}
+              />
             <div
               style={{
                 display: "flex",
@@ -314,6 +363,7 @@ export default function CartButton() {
                 {formattedTotal}
               </span>
             </div>
+            </>
           )}
           <button
             onClick={handleCheckout}
@@ -327,7 +377,6 @@ export default function CartButton() {
               borderRadius: "50px",
               fontWeight: "800",
               fontSize: "1rem",
-              cursor: "pointer",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",

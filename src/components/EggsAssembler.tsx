@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 
 import { addItemToCart } from "../store/cartStore.ts";
+import { EGG_TYPE_ICONS } from "./EggTypeIcons";
 
 const EGG_TYPES = [
   "Ovo de Colher",
@@ -131,6 +132,7 @@ export default function EggsAssembler() {
   const [toppingSlot, setToppingSlot] = useState(0);
   const [toast, setToast] = useState<string | null>(null);
   const [toastLeaving, setToastLeaving] = useState(false);
+  const [obsNote, setObsNote] = useState("");
 
   const contentRef = useRef<HTMLDivElement>(null);
   const [contentHeight, setContentHeight] = useState<number | undefined>(undefined);
@@ -158,6 +160,7 @@ export default function EggsAssembler() {
     setShellSlot(0);
     setFillingSlot(0);
     setToppingSlot(0);
+    setObsNote("");
   };
 
   const getRequiredSteps = () => {
@@ -277,6 +280,7 @@ export default function EggsAssembler() {
       additionals.length > 0
         ? `Adicionais Pagos: ${additionals.join(", ")}`
         : null,
+      obsNote.trim() ? `Obs.: ${obsNote.trim()}` : null,
     ]
       .filter(Boolean)
       .join(" | ");
@@ -289,8 +293,8 @@ export default function EggsAssembler() {
 
     setToast("Ovo adicionado ao carrinho!");
     setToastLeaving(false);
-    setTimeout(() => setToastLeaving(true), 2500);
-    setTimeout(() => setToast(null), 3000);
+    setTimeout(() => setToastLeaving(true), 3500);
+    setTimeout(() => setToast(null), 4000);
     resetAll();
   };
 
@@ -476,16 +480,33 @@ export default function EggsAssembler() {
         {currentStepName === "type" && (
         <div>
           <h3 style={titleStyle}>Escolha o tipo de ovo:</h3>
-          <div style={gridStyle}>
-            {EGG_TYPES.map((type) => (
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
+            {EGG_TYPES.slice(0, 4).map((type) => (
               <button
                 key={type}
                 onClick={() => handleSelectType(type)}
-                style={selectedType === type ? btnStyleSelected : btnStyleLight}
+                style={selectedType === type ? typeCardSelectedStyle : typeCardStyle}
               >
-                {type}
+                <div style={{ position: "relative", width: "80px", height: "80px", flexShrink: 0 }}>
+                  {EGG_TYPE_ICONS[type]}
+                </div>
+                <span style={{ fontSize: "0.85rem", fontWeight: "700", lineHeight: 1.3 }}>{type}</span>
               </button>
             ))}
+          </div>
+          <div style={{ display: "flex", justifyContent: "center", marginTop: "0.75rem" }}>
+            <button
+              onClick={() => handleSelectType("Mini Ovos")}
+              style={{
+                ...(selectedType === "Mini Ovos" ? typeCardSelectedStyle : typeCardStyle),
+                width: "100%",
+              }}
+            >
+              <div style={{ position: "relative", width: "80px", height: "80px", flexShrink: 0 }}>
+                {EGG_TYPE_ICONS["Mini Ovos"]}
+              </div>
+              <span style={{ fontSize: "0.85rem", fontWeight: "700", lineHeight: 1.3 }}>Mini Ovos</span>
+            </button>
           </div>
           <button
             onClick={() => setStepIndex(stepIndex + 1)}
@@ -811,6 +832,27 @@ export default function EggsAssembler() {
             </div>
           </div>
 
+          <textarea
+            value={obsNote}
+            onChange={(e) => setObsNote(e.target.value)}
+            placeholder="Alguma observação sobre este ovo? (opcional)"
+            rows={2}
+            style={{
+              width: "100%",
+              padding: "0.75rem 1rem",
+              borderRadius: "10px",
+              border: "1px solid #e8dfce",
+              fontSize: "0.9rem",
+              color: "#2d1e17",
+              backgroundColor: "rgba(255,255,255,0.8)",
+              resize: "none",
+              outline: "none",
+              fontFamily: "inherit",
+              marginBottom: "1rem",
+              boxSizing: "border-box",
+            }}
+          />
+
           <button
             onClick={handleAddToCart}
             style={{
@@ -922,4 +964,30 @@ const summaryValueStyle: React.CSSProperties = {
   color: "#2d1e17",
   fontWeight: "600",
   textAlign: "right",
+};
+
+const typeCardStyle: React.CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: "0.5rem",
+  padding: "0.9rem 0.75rem 0.85rem",
+  backgroundColor: "rgba(255,255,255,0.75)",
+  border: "1.5px solid #e8dfce",
+  borderRadius: "14px",
+  cursor: "pointer",
+  color: "#2d1e17",
+  textAlign: "center",
+  transition: "border-color 0.2s, background-color 0.2s, box-shadow 0.2s, transform 0.15s",
+  boxShadow: "0 2px 6px rgba(45,30,23,0.07)",
+  minHeight: "130px",
+};
+
+const typeCardSelectedStyle: React.CSSProperties = {
+  ...typeCardStyle,
+  backgroundColor: "#fff9f0",
+  border: "2px solid #e2b05b",
+  boxShadow: "0 4px 16px rgba(226,176,91,0.28)",
+  transform: "translateY(-2px)",
 };
