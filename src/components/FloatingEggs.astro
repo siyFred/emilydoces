@@ -1,0 +1,135 @@
+---
+---
+
+<!--
+  Ovos decorativos flutuando no fundo do site.
+  mix-blend-mode: multiply:
+    - sobre fundo claro (#f8f4e6 da main): tom marrom-dourado sutil
+    - sobre fundo escuro (#2d1e17 do header/footer): escurece ainda mais, combinando
+
+  Silhuetas:
+    A) Ovo normal  — oval clássico
+    B) Ovo Trufado — cortado ao meio com linha
+    C) Mini ovo    — mesmo oval, tamanho menor
+  Cada ovo tem --rot próprio que é somado nos keyframes, dando inclinação inicial única.
+-->
+
+<div class="eggs-bg" aria-hidden="true">
+
+  <!-- ═══ Ovos normais (A) ══════════════════════════════════════════ -->
+  <svg class="egg e1"  viewBox="0 0 40 52"><path d="M20 3C11 3 5 13 5 26C5 39 11 49 20 49C29 49 35 39 35 26C35 13 29 3 20 3Z"/></svg>
+  <svg class="egg e2"  viewBox="0 0 40 52"><path d="M20 3C11 3 5 13 5 26C5 39 11 49 20 49C29 49 35 39 35 26C35 13 29 3 20 3Z"/></svg>
+  <svg class="egg e3"  viewBox="0 0 40 52"><path d="M20 3C11 3 5 13 5 26C5 39 11 49 20 49C29 49 35 39 35 26C35 13 29 3 20 3Z"/></svg>
+  <svg class="egg e4"  viewBox="0 0 40 52"><path d="M20 3C11 3 5 13 5 26C5 39 11 49 20 49C29 49 35 39 35 26C35 13 29 3 20 3Z"/></svg>
+
+  <!-- ═══ Ovos Trufados — cortados (B) ═════════════════════════════ -->
+  <svg class="egg e5"  viewBox="0 0 40 52">
+    <path d="M20 3C11 3 5 13 5 26C5 39 11 49 20 49L20 3Z"/>
+    <path d="M20 3C29 3 35 13 35 26C35 39 29 49 20 49L20 3Z" opacity="0.5"/>
+    <line x1="20" y1="3" x2="20" y2="49" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  </svg>
+  <svg class="egg e6"  viewBox="0 0 40 52">
+    <path d="M20 3C11 3 5 13 5 26C5 39 11 49 20 49L20 3Z"/>
+    <path d="M20 3C29 3 35 13 35 26C35 39 29 49 20 49L20 3Z" opacity="0.5"/>
+    <line x1="20" y1="3" x2="20" y2="49" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  </svg>
+  <svg class="egg e7"  viewBox="0 0 40 52">
+    <path d="M20 3C11 3 5 13 5 26C5 39 11 49 20 49L20 3Z"/>
+    <path d="M20 3C29 3 35 13 35 26C35 39 29 49 20 49L20 3Z" opacity="0.5"/>
+    <line x1="20" y1="3" x2="20" y2="49" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  </svg>
+
+  <!-- ═══ Mini ovos individuais (C) ════════════════════════════════ -->
+  <svg class="egg e8"  viewBox="0 0 40 52"><path d="M20 3C11 3 5 13 5 26C5 39 11 49 20 49C29 49 35 39 35 26C35 13 29 3 20 3Z"/></svg>
+  <svg class="egg e9"  viewBox="0 0 40 52"><path d="M20 3C11 3 5 13 5 26C5 39 11 49 20 49C29 49 35 39 35 26C35 13 29 3 20 3Z"/></svg>
+  <svg class="egg e10" viewBox="0 0 40 52"><path d="M20 3C11 3 5 13 5 26C5 39 11 49 20 49C29 49 35 39 35 26C35 13 29 3 20 3Z"/></svg>
+  <svg class="egg e11" viewBox="0 0 40 52"><path d="M20 3C11 3 5 13 5 26C5 39 11 49 20 49C29 49 35 39 35 26C35 13 29 3 20 3Z"/></svg>
+  <svg class="egg e12" viewBox="0 0 40 52"><path d="M20 3C11 3 5 13 5 26C5 39 11 49 20 49C29 49 35 39 35 26C35 13 29 3 20 3Z"/></svg>
+  <svg class="egg e13" viewBox="0 0 40 52"><path d="M20 3C11 3 5 13 5 26C5 39 11 49 20 49C29 49 35 39 35 26C35 13 29 3 20 3Z"/></svg>
+
+</div>
+
+<style>
+  .eggs-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    overflow: hidden;
+    mix-blend-mode: multiply;
+    /* Na zona da main (entre header ~95px e footer ~80px do fundo):
+       alpha 0.79 × opacidade base 0.38 ≈ 0.30.
+       No header e footer: alpha 1.0 → opacidade base 0.38 intacta. */
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      black                       95px,
+      rgba(0,0,0,0.53)            110px,
+      rgba(0,0,0,0.53)            calc(100% - 80px),
+      black                       calc(100% - 65px)
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      black                       95px,
+      rgba(0,0,0,0.53)            110px,
+      rgba(0,0,0,0.53)            calc(100% - 80px),
+      black                       calc(100% - 65px)
+    );
+  }
+
+  .egg {
+    position: absolute;
+    fill: #b8895a;
+    color: #b8895a;
+    opacity: 0.38;
+    will-change: transform;
+    /* --rot é definido por elemento e somado nos keyframes */
+    --rot: 0deg;
+  }
+
+  /* ─── Ovos normais ──────────────────────────────────────────────── */
+  .e1  { width: 44px; left:  5%; top: 80vh; --rot: -7deg;  animation: float-ur 70s linear infinite  -6s; }
+  .e2  { width: 40px; left: 72%; top: 62vh; --rot:  4deg;  animation: float-u  58s linear infinite -24s; }
+  .e3  { width: 50px; left: 55%; top: 85vh; --rot: 11deg;  animation: float-ul 75s linear infinite -40s; }
+  .e4  { width: 46px; left: 88%; top: 70vh; --rot: -3deg;  animation: float-ur 62s linear infinite  -8s; }
+
+  /* ─── Ovos Trufados ─────────────────────────────────────────────── */
+  .e5  { width: 38px; left: 20%; top: 55vh; --rot:  8deg;  animation: float-u  54s linear infinite -18s; }
+  .e6  { width: 42px; left: 40%; top: 30vh; --rot: -11deg; animation: float-ul 80s linear infinite -48s; }
+  .e7  { width: 44px; left: 65%; top: 20vh; --rot:  6deg;  animation: float-ur 65s linear infinite -32s; }
+
+  /* ─── Mini ovos (menores, mais distribuídos) ────────────────────── */
+  .e8  { width: 26px; left: 82%; top: 18vh; --rot:  9deg;  animation: float-ul 66s linear infinite -14s; }
+  .e9  { width: 24px; left: 46%; top: 10vh; --rot: -4deg;  animation: float-ur 78s linear infinite -36s; }
+  .e10 { width: 28px; left: 30%; top: 90vh; --rot: 13deg;  animation: float-u  60s linear infinite -50s; }
+  .e11 { width: 22px; left:  2%; top: 48vh; --rot: -9deg;  animation: float-ul 68s linear infinite -28s; }
+  .e12 { width: 30px; left: 60%; top: 44vh; --rot:  5deg;  animation: float-ur 56s linear infinite -15s; }
+  .e13 { width: 26px; left: 15%; top: 15vh; --rot: -12deg; animation: float-u  74s linear infinite -42s; }
+
+  /* ─── Keyframes ─────────────────────────────────────────────────── */
+  /* --rot é a inclinação de partida; os keyframes somam pequenas variações     */
+
+  @keyframes float-ur {
+    0%   { transform: translate(0,    0)      rotate(var(--rot)); }
+    25%  { transform: translate(6px,  -28vh)  rotate(calc(var(--rot) + 2deg)); }
+    50%  { transform: translate(11px, -56vh)  rotate(calc(var(--rot) + 4deg)); }
+    75%  { transform: translate(15px, -84vh)  rotate(calc(var(--rot) + 3deg)); }
+    100% { transform: translate(18px, -120vh) rotate(calc(var(--rot) + 5deg)); }
+  }
+
+  @keyframes float-u {
+    0%   { transform: translate(0,    0)      rotate(var(--rot)); }
+    20%  { transform: translate(-5px, -24vh)  rotate(calc(var(--rot) - 2deg)); }
+    40%  { transform: translate(4px,  -48vh)  rotate(calc(var(--rot) + 2deg)); }
+    60%  { transform: translate(-3px, -72vh)  rotate(calc(var(--rot) - 1deg)); }
+    80%  { transform: translate(5px,  -96vh)  rotate(calc(var(--rot) + 1deg)); }
+    100% { transform: translate(0,    -120vh) rotate(var(--rot)); }
+  }
+
+  @keyframes float-ul {
+    0%   { transform: translate(0,    0)      rotate(var(--rot)); }
+    25%  { transform: translate(-6px, -28vh)  rotate(calc(var(--rot) - 2deg)); }
+    50%  { transform: translate(-11px,-56vh)  rotate(calc(var(--rot) - 4deg)); }
+    75%  { transform: translate(-15px,-84vh)  rotate(calc(var(--rot) - 3deg)); }
+    100% { transform: translate(-18px,-120vh) rotate(calc(var(--rot) - 5deg)); }
+  }
+</style>

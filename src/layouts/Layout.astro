@@ -1,6 +1,7 @@
 ---
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+import FloatingEggs from "../components/FloatingEggs.astro";
 
 interface Props {
   title: string;
@@ -18,11 +19,13 @@ const { title } = Astro.props;
     <link rel="icon" href="/favicon.ico" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content="Monte seu ovo de Páscoa personalizado com a Emily Doces. Escolha recheios, cascas e acompanhamentos e finalize seu pedido pelo WhatsApp!" />
+    <link rel="preload" as="image" href="/logo.png" fetchpriority="high" />
     <title>{title}</title>
   </head>
   <body
     style="margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, sans-serif; display: flex; flex-direction: column; min-height: 100dvh;"
   >
+    <FloatingEggs />
     <Header />
     <main class="site-main">
       <slot />

@@ -24,7 +24,9 @@ import CartButton from "./CartButton";
       <img
         src="logo.png"
         alt="Logo Emily Doces"
-        class="header-logo"
+        class="header-logo logo-write"
+        fetchpriority="high"
+        loading="eager"
         style={{
           height: "85px",
           width: "auto",
@@ -39,3 +41,37 @@ import CartButton from "./CartButton";
     <CartButton client:load />
   </div>
 </header>
+
+<style>
+  .logo-write {
+    /* Gradiente com borda suave para imitar traço de caneta */
+    -webkit-mask-image: linear-gradient(
+      to right,
+      black        40%,
+      rgba(0,0,0,0.55) 47%,
+      transparent  54%
+    );
+    -webkit-mask-size: 220% 100%;
+    -webkit-mask-position: 100% 0;
+    mask-image: linear-gradient(
+      to right,
+      black        40%,
+      rgba(0,0,0,0.55) 47%,
+      transparent  54%
+    );
+    mask-size: 220% 100%;
+    mask-position: 100% 0;
+    animation: write-logo 2s cubic-bezier(0.4, 0, 0.2, 1) 0s forwards;
+  }
+
+  @keyframes write-logo {
+    from {
+      -webkit-mask-position: 100% 0;
+      mask-position: 100% 0;
+    }
+    to {
+      -webkit-mask-position: 0% 0;
+      mask-position: 0% 0;
+    }
+  }
+</style>

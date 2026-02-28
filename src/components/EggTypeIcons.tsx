@@ -36,14 +36,6 @@ export const EGG_TYPE_ICONS: Record<string, React.ReactNode> = {
       <path d="M22 30 Q31 27 40 30 Q49 33 58 29" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
       <path d="M19 44 Q30 40 40 43 Q50 46 61 42" stroke="rgba(255,255,255,0.32)" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
       <path d="M20 57 Q30 53 40 56 Q50 59 60 55" stroke="rgba(255,255,255,0.25)" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
-      {/* Gather at top */}
-      <path d="M34 13 Q37 8 40 6 Q43 8 46 13" stroke="rgba(255,255,255,0.3)" strokeWidth="1" fill="none"/>
-      {/* Bow wings */}
-      <path d="M32 7 C25 3 19 5 20 9 C21 13 27 13 33 10 Z" fill="#c9922a"/>
-      <path d="M48 7 C55 3 61 5 60 9 C59 13 53 13 47 10 Z" fill="#c9922a"/>
-      {/* Bow knot */}
-      <circle cx="40" cy="8" r="4.5" fill="#e2b05b"/>
-      <circle cx="40" cy="8" r="2.5" fill="#f5cc6a" opacity="0.55"/>
     </svg>
   ),
 
