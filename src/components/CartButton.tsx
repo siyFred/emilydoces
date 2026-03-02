@@ -94,6 +94,16 @@ export default function CartButton() {
           70%  { transform: scale(1.1) rotate(-3deg); }
           100% { transform: scale(1) rotate(0deg); }
         }
+        @media (min-width: 768px) {
+          .cart-footer { padding: 0.55rem 0.9rem !important; }
+          .cart-name-input { margin-bottom: 0.35rem !important; padding-top: 0.35rem !important; padding-bottom: 0.35rem !important; }
+          .cart-payment-section { margin-bottom: 0.35rem !important; }
+          .cart-payment-btn { padding-top: 0.22rem !important; padding-bottom: 0.22rem !important; }
+          .cart-total-row { margin-bottom: 0.2rem !important; font-size: 0.88rem !important; }
+          .cart-split-box { padding: 0.25rem 0.65rem !important; margin-bottom: 0.35rem !important; }
+          .cart-split-box div { font-size: 0.76rem !important; }
+          .cart-checkout-btn { padding: 0.5rem !important; font-size: 0.88rem !important; }
+        }
       `}</style>
       <button
         onClick={() => setIsOpen(true)}
@@ -341,8 +351,9 @@ export default function CartButton() {
         </div>
 
         <div
+          className="cart-footer"
           style={{
-            padding: "1.25rem 1.5rem",
+            padding: "0.9rem 1.2rem",
             borderTop: "2px solid #e2b05b",
             backgroundColor: "#2d1e17",
           }}
@@ -354,23 +365,24 @@ export default function CartButton() {
                 placeholder="Seu nome (opcional)"
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
+                className="cart-name-input"
                 style={{
                   width: "100%",
-                  padding: "0.65rem 1rem",
+                  padding: "0.5rem 1rem",
                   borderRadius: "50px",
                   border: "1px solid rgba(248,244,230,0.2)",
                   backgroundColor: "rgba(255,255,255,0.08)",
                   color: "#f8f4e6",
-                  fontSize: "0.9rem",
+                  fontSize: "0.88rem",
                   outline: "none",
-                  marginBottom: "0.85rem",
+                  marginBottom: "0.55rem",
                   boxSizing: "border-box" as const,
                   fontFamily: "inherit",
                 }}
               />
 
               {/* Payment method selector */}
-              <div style={{ marginBottom: "0.85rem" }}>
+              <div className="cart-payment-section" style={{ marginBottom: "0.55rem" }}>
                 <span style={{ color: "rgba(248,244,230,0.6)", fontSize: "0.78rem", fontWeight: "600", letterSpacing: "0.05em", textTransform: "uppercase", display: "block", marginBottom: "0.45rem" }}>
                   Forma de pagamento
                 </span>
@@ -382,9 +394,10 @@ export default function CartButton() {
                       <button
                         key={method}
                         onClick={() => setPaymentMethod(method)}
+                        className="cart-payment-btn"
                         style={{
                           flex: 1,
-                          padding: "0.45rem 0.3rem",
+                          padding: "0.32rem 0.3rem",
                           borderRadius: "20px",
                           border: active ? "2px solid #e2b05b" : "1px solid rgba(248,244,230,0.2)",
                           backgroundColor: active ? "#e2b05b" : "rgba(255,255,255,0.07)",
@@ -410,13 +423,14 @@ export default function CartButton() {
 
               {/* Total */}
               <div
+                className="cart-total-row"
                 style={{
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
-                  marginBottom: "0.5rem",
+                  marginBottom: "0.35rem",
                   color: "#f8f4e6",
-                  fontSize: "0.95rem",
+                  fontSize: "0.9rem",
                 }}
               >
                 <span style={{ fontWeight: "600" }}>Total</span>
@@ -426,7 +440,7 @@ export default function CartButton() {
               </div>
 
               {/* Split payment */}
-              <div style={{ backgroundColor: "rgba(255,255,255,0.06)", borderRadius: "10px", padding: "0.6rem 0.9rem", marginBottom: "0.85rem" }}>
+              <div className="cart-split-box" style={{ backgroundColor: "rgba(255,255,255,0.06)", borderRadius: "10px", padding: "0.4rem 0.8rem", marginBottom: "0.55rem" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.82rem", color: "rgba(248,244,230,0.75)", marginBottom: "0.25rem" }}>
                   <span>Sinal (50% agora)</span>
                   <span style={{ fontWeight: "700", color: "#f8f4e6" }}>{formattedSplit}</span>
@@ -441,15 +455,16 @@ export default function CartButton() {
           <button
             onClick={handleCheckout}
             disabled={totalItems === 0}
+            className="cart-checkout-btn"
             style={{
               width: "100%",
-              padding: "1rem",
+              padding: "0.7rem",
               backgroundColor: "#e2b05b",
               color: "#2d1e17",
               border: "none",
               borderRadius: "50px",
               fontWeight: "800",
-              fontSize: "1rem",
+              fontSize: "0.93rem",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
