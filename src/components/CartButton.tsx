@@ -7,6 +7,7 @@ export default function CartButton() {
   const totalItems = items.length;
   const [isOpen, setIsOpen] = useState(false);
   const [customerName, setCustomerName] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState<"pix" | "dinheiro" | "cartao">("pix");
   const [bumping, setBumping] = useState(false);
   const prevCount = useRef(totalItems);
 
@@ -20,11 +21,18 @@ export default function CartButton() {
 
   const closeCart = () => setIsOpen(false);
 
-  const totalValue = items.reduce((acc, item) => {
+  const subtotal = items.reduce((acc, item) => {
     const clean = item.price.replace(/[^\d,-]/g, "").replace(",", ".");
     return acc + (parseFloat(clean) || 0);
   }, 0);
+  const cardFee = paymentMethod === "cartao" ? 3.0 : 0.0;
+  const totalValue = subtotal + cardFee;
+  const splitValue = totalValue / 2;
   const formattedTotal = totalValue.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+  const formattedSplit = splitValue.toLocaleString("pt-BR", {
     style: "currency",
     currency: "BRL",
   });
@@ -39,24 +47,36 @@ export default function CartButton() {
       orderText += `*Nome:* ${customerName.trim()}\n\n`;
     }
 
-    let totalValue = 0;
+    let itemsSubtotal = 0;
 
     items.forEach((item, index) => {
       const cleanPrice = item.price.replace(/[^\d,-]/g, "").replace(",", ".");
-      totalValue += parseFloat(cleanPrice) || 0;
+      itemsSubtotal += parseFloat(cleanPrice) || 0;
 
       orderText += `*${index + 1}. ${item.type}*\n`;
       orderText += `${item.description.split(" | ").join("\n")}\n`;
       orderText += `Valor: ${item.price}\n\n`;
     });
 
-    const formattedTotalValue = totalValue.toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    });
+    const fee = paymentMethod === "cartao" ? 3.0 : 0.0;
+    const grand = itemsSubtotal + fee;
+    const split = grand / 2;
 
-    orderText += `*TOTAL DO PEDIDO: ${formattedTotalValue}*\n\n`;
-    orderText += `Aguardo a confirmação e as formas de pagamento!`;
+    const paymentLabels: Record<string, string> = {
+      pix: "PIX",
+      dinheiro: "Dinheiro",
+      cartao: "Cartão (+R$ 3,00)",
+    };
+
+    const fmtBRL = (v: number) =>
+      v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+    orderText += `*Forma de Pagamento:* ${paymentLabels[paymentMethod]}\n`;
+    if (fee > 0) orderText += `*Taxa Cartão:* ${fmtBRL(fee)}\n`;
+    orderText += `*TOTAL DO PEDIDO: ${fmtBRL(grand)}*\n\n`;
+    orderText += `*Sinal (50% agora):* ${fmtBRL(split)}\n`;
+    orderText += `*Restante (50% na entrega):* ${fmtBRL(split)}\n\n`;
+    orderText += `Aguardo a confirmação!`;
 
     const message = encodeURIComponent(orderText);
     const url = `https://wa.me/${whatsapp}?text=${message}`;
@@ -348,21 +368,74 @@ export default function CartButton() {
                   fontFamily: "inherit",
                 }}
               />
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "1rem",
-                color: "#f8f4e6",
-                fontSize: "0.95rem",
-              }}
-            >
-              <span style={{ fontWeight: "600" }}>Total</span>
-              <span style={{ fontWeight: "800", fontSize: "1.1rem", color: "#e2b05b" }}>
-                {formattedTotal}
-              </span>
-            </div>
+
+              {/* Payment method selector */}
+              <div style={{ marginBottom: "0.85rem" }}>
+                <span style={{ color: "rgba(248,244,230,0.6)", fontSize: "0.78rem", fontWeight: "600", letterSpacing: "0.05em", textTransform: "uppercase", display: "block", marginBottom: "0.45rem" }}>
+                  Forma de pagamento
+                </span>
+                <div style={{ display: "flex", gap: "0.4rem" }}>
+                  {(["pix", "dinheiro", "cartao"] as const).map((method) => {
+                    const labels = { pix: "PIX", dinheiro: "Dinheiro", cartao: "Cartão" };
+                    const active = paymentMethod === method;
+                    return (
+                      <button
+                        key={method}
+                        onClick={() => setPaymentMethod(method)}
+                        style={{
+                          flex: 1,
+                          padding: "0.45rem 0.3rem",
+                          borderRadius: "20px",
+                          border: active ? "2px solid #e2b05b" : "1px solid rgba(248,244,230,0.2)",
+                          backgroundColor: active ? "#e2b05b" : "rgba(255,255,255,0.07)",
+                          color: active ? "#2d1e17" : "#f8f4e6",
+                          fontWeight: "700",
+                          fontSize: "0.82rem",
+                          cursor: "pointer",
+                          fontFamily: "inherit",
+                          transition: "all 0.15s",
+                        }}
+                      >
+                        {labels[method]}
+                      </button>
+                    );
+                  })}
+                </div>
+                {paymentMethod === "cartao" && (
+                  <p style={{ color: "#e2b05b", fontSize: "0.75rem", margin: "0.35rem 0 0", fontWeight: "600" }}>
+                    + R$ 3,00 de taxa
+                  </p>
+                )}
+              </div>
+
+              {/* Total */}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "0.5rem",
+                  color: "#f8f4e6",
+                  fontSize: "0.95rem",
+                }}
+              >
+                <span style={{ fontWeight: "600" }}>Total</span>
+                <span style={{ fontWeight: "800", fontSize: "1.1rem", color: "#e2b05b" }}>
+                  {formattedTotal}
+                </span>
+              </div>
+
+              {/* Split payment */}
+              <div style={{ backgroundColor: "rgba(255,255,255,0.06)", borderRadius: "10px", padding: "0.6rem 0.9rem", marginBottom: "0.85rem" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.82rem", color: "rgba(248,244,230,0.75)", marginBottom: "0.25rem" }}>
+                  <span>Sinal (50% agora)</span>
+                  <span style={{ fontWeight: "700", color: "#f8f4e6" }}>{formattedSplit}</span>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.82rem", color: "rgba(248,244,230,0.75)" }}>
+                  <span>Restante (50% na entrega)</span>
+                  <span style={{ fontWeight: "700", color: "#f8f4e6" }}>{formattedSplit}</span>
+                </div>
+              </div>
             </>
           )}
           <button
