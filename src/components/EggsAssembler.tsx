@@ -865,7 +865,7 @@ export default function EggsAssembler() {
                   disabled={outOfStock}
                   style={{
                     ...(selectedAccessory === opt ? typeCardSelectedStyle : typeCardStyle),
-                    opacity: outOfStock ? 0.5 : 1,
+                    opacity: 1,
                     cursor: outOfStock ? "not-allowed" : "pointer",
                     position: "relative",
                   }}
@@ -874,10 +874,10 @@ export default function EggsAssembler() {
                     <img
                       src={ACCESSORY_IMAGE[opt]}
                       alt={opt}
-                      style={{ width: "80px", height: "80px", flexShrink: 0, objectFit: "contain", filter: outOfStock ? "grayscale(0.7)" : "none" }}
+                      style={{ width: "80px", height: "80px", flexShrink: 0, objectFit: "contain", opacity: outOfStock ? 0.45 : 1, filter: outOfStock ? "grayscale(1)" : "none" }}
                     />
                     {outOfStock && (
-                      <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "rgba(255,255,255,0.65)", borderRadius: "8px", fontSize: "0.6rem", fontWeight: "800", color: "#dc3545", letterSpacing: "0.05em" }}>ESGOTADO</div>
+                      <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "8px", fontSize: "0.6rem", fontWeight: "900", color: "#dc3545", letterSpacing: "0.08em", textShadow: "0 0 4px rgba(255,255,255,0.8)" }}>ESGOTADO</div>
                     )}
                   </div>
                   <span style={{ fontSize: "0.85rem", fontWeight: "700", lineHeight: 1.3 }}>{opt}</span>
@@ -1256,12 +1256,12 @@ export default function EggsAssembler() {
                         key={opt}
                         disabled={outOfStock}
                         onClick={() => { if (!outOfStock) { setSelectedAccessory(opt); setAccessoryEditMode(null); } }}
-                        style={{ ...typeCardStyle, minHeight: "auto", padding: "0.5rem", opacity: outOfStock ? 0.5 : 1, cursor: outOfStock ? "not-allowed" : "pointer", ...(selectedAccessory === opt ? { backgroundColor: "#fff9f0", border: "2px solid #e2b05b" } : {}) }}
+                        style={{ ...typeCardStyle, minHeight: "auto", padding: "0.5rem", opacity: 1, cursor: outOfStock ? "not-allowed" : "pointer", ...(selectedAccessory === opt ? { backgroundColor: "#fff9f0", border: "2px solid #e2b05b" } : {}) }}
                       >
                         <div style={{ position: "relative" }}>
-                          <img src={ACCESSORY_IMAGE[opt]} alt={opt} style={{ width: "56px", height: "56px", objectFit: "contain", filter: outOfStock ? "grayscale(0.7)" : "none" }} />
+                          <img src={ACCESSORY_IMAGE[opt]} alt={opt} style={{ width: "56px", height: "56px", objectFit: "contain", opacity: outOfStock ? 0.45 : 1, filter: outOfStock ? "grayscale(1)" : "none" }} />
                           {outOfStock && (
-                            <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "rgba(255,255,255,0.65)", borderRadius: "6px", fontSize: "0.55rem", fontWeight: "800", color: "#dc3545", letterSpacing: "0.05em" }}>ESGOTADO</div>
+                            <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "6px", fontSize: "0.55rem", fontWeight: "900", color: "#dc3545", letterSpacing: "0.08em", textShadow: "0 0 4px rgba(255,255,255,0.8)" }}>ESGOTADO</div>
                           )}
                         </div>
                         <span style={{ fontSize: "0.72rem", fontWeight: "700", lineHeight: 1.2, textAlign: "center" }}>{opt}</span>
