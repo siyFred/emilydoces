@@ -39,10 +39,29 @@ export const STOCK_ITEMS = {
   ],
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Dicionário de itens esgotados por padrão.
+// Altere aqui para marcar/desmarcar itens como esgotados.
+// O painel admin ainda pode sobrescrever via localStorage.
+// ─────────────────────────────────────────────────────────────────────────────
+export const SOLD_OUT: Record<string, boolean> = {
+  // Miniaturas Divertida Mente
+  "Miniatura da Alegria": true,
+
+  // Miniaturas Pokémon
+  // "Miniatura do Pikachu": true,
+
+  // Pelúcias Pokémon
+  // "Pelúcia do Lapras": true,
+
+  // Pelúcias Lilo & Stitch
+  // "Pelúcia do Stitch Rosa": true,
+};
+
 const ALL_ITEMS = Object.values(STOCK_ITEMS).flat();
 
 const DEFAULT_STOCK: StockMap = Object.fromEntries(
-  ALL_ITEMS.map((item) => [item, null])
+  ALL_ITEMS.map((item) => [item, SOLD_OUT[item] ? 0 : null])
 );
 
 export const stockStore = atom<StockMap>(DEFAULT_STOCK);
@@ -52,8 +71,19 @@ if (typeof window !== "undefined") {
   if (saved) {
     try {
       const parsed = JSON.parse(saved) as StockMap;
-      // merge: keep defaults for any new items added later
-      stockStore.set({ ...DEFAULT_STOCK, ...parsed });
+      // merge: keep defaults for any new items added later.
+      // For items in SOLD_OUT, only override if the admin explicitly restocked
+      // (value > 0). A saved null means "was available before" — ignore it so
+      // the new SOLD_OUT entry takes effect.
+      const merged: StockMap = { ...DEFAULT_STOCK };
+      for (const key of Object.keys(parsed)) {
+        if (SOLD_OUT[key] && (parsed[key] === null || parsed[key] === undefined)) {
+          // keep the SOLD_OUT default (0)
+        } else {
+          merged[key] = parsed[key];
+        }
+      }
+      stockStore.set(merged);
     } catch {
       stockStore.set(DEFAULT_STOCK);
     }
