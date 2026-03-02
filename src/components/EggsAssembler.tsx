@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useStore } from "@nanostores/react";
 
 import { addItemToCart } from "../store/cartStore.ts";
 import { EGG_TYPE_ICONS } from "./EggTypeIcons";
+import { stockStore } from "../store/stockStore.ts";
 
 const EGG_TYPES = [
   "Ovo de Colher",
@@ -36,16 +38,16 @@ const SIZES_BY_TYPE: Record<string, string[]> = {
 };
 
 const PRICES: Record<string, Record<string, number>> = {
-  "Ovo de Colher Simples": { "250g": 62.0, "350g": 72.0 },
+  "Ovo de Colher Simples": { "250g": 62.0, "350g": 75.0 },
   "Ovo de Colher Especial": { "250g": 68.0, "350g": 78.0 },
-  "Ovo de Colher de Guloseimas": { "250g": 70.0, "350g": 80.0 },
+  "Ovo de Colher de Guloseimas": { "250g": 70.0, "350g": 82.0 },
   "Ovo de Colher de Brownie": { "250g": 78.0, "350g": 90.0 },
-  "Ovo Simples": { "250g": 40.0, "350g": 50.0 },
-  "Ovo Simples com Miniatura": { "250g": 55.0, "350g": 65.0 },
+  "Ovo Simples": { "250g": 45.0, "350g": 55.0 },
+  "Ovo Simples com Miniatura": { "250g": 60.0, "350g": 70.0 },
   "Ovo Simples com Pelúcia": { "250g": 75.0, "350g": 85.0 },
   "Ovo Trufado de Uma Banda": { "250g": 37.0, "350g": 47.0 },
   "Ovo Trufado de Duas Bandas": { "250g": 68.0, "350g": 78.0 },
-  "Ovo de Pote": { "250g": 85.0, "350g": 98.5 },
+  "Ovo de Pote": { "250g": 80.0, "350g": 95.5 },
   "Mini Ovos": { "Caixa com 2 unidades": 20.0, "Caixa com 4 unidades": 40.0 },
 };
 
@@ -73,7 +75,6 @@ const EGGSHELL_OPT = [
   "Chocolate Meio Amargo",
   "Chocolate ao Leite com Oreo",
   "Chocolate Branco com Oreo",
-  "Chocolate ao Leite com Disquete",
   "Chocolate Branco com Disquete",
   "Chocolate ao Leite com Amendoim",
   "Chocolate Meio Amargo com Amendoim",
@@ -95,14 +96,20 @@ const FILLING_OPT = [
   "Beijinho",
   "Maracujá",
   "Limão",
+  "Prestígio",
+  "Ovomaltine",
 ];
 
 const TOPPING_OPT = [
   "Brigadeiro de Chocolate",
   "Brigadeiro de Leite Ninho",
+  "Brigadeiro de Amendoim",
+  "Coelhinho de Chocolate",
   "Beijinho",
   "KitKat",
-  "Bis",
+  "Bis Chocolate",
+  "Bis Branco",
+  "Bis Limão",
   "Paçoca",
   "Brownie",
   "Oreo",
@@ -129,24 +136,84 @@ const SIMPLE_STYLES = [
 
 const MINIATURA_OPTIONS = [
   "Miniatura do Pikachu",
-  "Miniatura do Mega Charizard Y",
+  "Miniatura do Mega Charizard X",
   "Miniatura do Mega Blastoise",
   "Miniatura do Mega Venusaur",
   "Miniatura do Charizard",
   "Miniatura do Mewtwo",
+  "Miniatura do Scorbunny",
+  "Miniatura do Dracovish",
+  "Miniatura do Zarude",
+  "Miniatura do Greninja",
+  "Miniatura do Zeraora",
+  "Miniatura do Drizzile",
 ];
 
-const PELUCIA_OPTIONS = [
+const MINIATURA_DM_OPTIONS = [
+  "Miniatura da Alegria",
+  "Miniatura da Ansiedade",
+  "Miniatura da Inveja",
+  "Miniatura do Medo",
+  "Miniatura do Nojinho",
+  "Miniatura da Raiva",
+  "Miniatura do Tédio",
+  "Miniatura da Tristeza",
+  "Miniatura da Vergonha",
+];
+
+const PELUCIA_POKEMON_OPTIONS = [
   "Pelúcia do Pikachu",
   "Pelúcia do Lapras",
-  "Pelúcia do Stitch",
 ];
 
+const PELUCIA_STITCH_OPTIONS = [
+  "Pelúcia do Stitch Azul",
+  "Pelúcia do Stitch Rosa",
+];
+
+const PELUCIA_OPTIONS = [...PELUCIA_POKEMON_OPTIONS, ...PELUCIA_STITCH_OPTIONS];
+
+const ACCESSORY_IMAGE: Record<string, string> = {
+  "Miniatura do Pikachu": "/miniaturas/pokemon/pikachu.png",
+  "Miniatura do Mega Charizard X": "/miniaturas/pokemon/mega_charizard_x.png",
+  "Miniatura do Mega Blastoise": "/miniaturas/pokemon/mega_blastoise.png",
+  "Miniatura do Mega Venusaur": "/miniaturas/pokemon/mega_venusaur.png",
+  "Miniatura do Charizard": "/miniaturas/pokemon/charizard.png",
+  "Miniatura do Mewtwo": "/miniaturas/pokemon/mewtwo.png",
+  "Miniatura do Scorbunny": "/miniaturas/pokemon/scorbunny.png",
+  "Miniatura do Dracovish": "/miniaturas/pokemon/dracovish.png",
+  "Miniatura do Zarude": "/miniaturas/pokemon/zarude.png",
+  "Miniatura do Greninja": "/miniaturas/pokemon/greninja.png",
+  "Miniatura do Zeraora": "/miniaturas/pokemon/zeraora.png",
+  "Miniatura do Drizzile": "/miniaturas/pokemon/drizzile.png",
+  "Pelúcia do Pikachu": "/pelucias/pokemon/pikachu.png",
+  "Pelúcia do Lapras": "/pelucias/pokemon/lapras.png",
+  "Pelúcia do Stitch Azul": "/pelucias/stitch/stitch_azul.png",
+  "Pelúcia do Stitch Rosa": "/pelucias/stitch/stitch_rosa.png",
+  "Miniatura da Alegria": "/miniaturas/divertida_mente/alegria.png",
+  "Miniatura da Ansiedade": "/miniaturas/divertida_mente/ansiedade.png",
+  "Miniatura da Inveja": "/miniaturas/divertida_mente/inveja.png",
+  "Miniatura do Medo": "/miniaturas/divertida_mente/medo.png",
+  "Miniatura do Nojinho": "/miniaturas/divertida_mente/nojinho.png",
+  "Miniatura da Raiva": "/miniaturas/divertida_mente/raiva.png",
+  "Miniatura do Tédio": "/miniaturas/divertida_mente/tedio.png",
+  "Miniatura da Tristeza": "/miniaturas/divertida_mente/tristeza.png",
+  "Miniatura da Vergonha": "/miniaturas/divertida_mente/vergonha.png",
+};
+
 export default function EggsAssembler() {
+  const stock = useStore(stockStore);
+  const isOutOfStock = (item: string) => {
+    const s = stock[item];
+    return s !== null && s !== undefined && s <= 0;
+  };
+
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [selectedSubtype, setSelectedSubtype] = useState<string | null>(null);
   const [selectedSimpleStyle, setSelectedSimpleStyle] = useState<string | null>(null);
   const [selectedAccessory, setSelectedAccessory] = useState<string | null>(null);
+  const [selectedAccessoryCategory, setSelectedAccessoryCategory] = useState<string | null>(null);
+  const [accessoryEditMode, setAccessoryEditMode] = useState<"category" | "item" | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
 
   const [shells, setShells] = useState<string[]>([]);
@@ -182,6 +249,8 @@ export default function EggsAssembler() {
     setSelectedSubtype(null);
     setSelectedSimpleStyle(null);
     setSelectedAccessory(null);
+    setSelectedAccessoryCategory(null);
+    setAccessoryEditMode(null);
     setSelectedSize(null);
     setShells([]);
     setFillings([]);
@@ -201,7 +270,10 @@ export default function EggsAssembler() {
     if (selectedType === "Ovo Simples") {
       steps.push("simplestyle");
       if (selectedSimpleStyle && selectedSimpleStyle !== "Ovo Simples") {
-        steps.push("accessory");
+        steps.push("accessory_category");
+        if (selectedAccessoryCategory) {
+          steps.push("accessory");
+        }
       }
     }
 
@@ -240,6 +312,8 @@ export default function EggsAssembler() {
       setSelectedSubtype(null);
       setSelectedSimpleStyle(null);
       setSelectedAccessory(null);
+      setSelectedAccessoryCategory(null);
+      setAccessoryEditMode(null);
       setSelectedSize(null);
       setShells([]);
       setFillings([]);
@@ -300,12 +374,24 @@ export default function EggsAssembler() {
     currentPrice = PRICES[currentKey][selectedSize];
   }
 
-  const extraPrice = additionals.reduce(
-    (total, add) => total + (ADDITIONALS_PRICES[add] || 0),
-    0,
-  );
+  const extraPrice = additionals.reduce((total, add) => {
+    if (selectedType === "Mini Ovos") {
+      return total + 4.0;
+    }
+    return total + (ADDITIONALS_PRICES[add] || 0);
+  }, 0);
+
+  const getAccessoryPrice = (acc: string | null): number => {
+    if (!acc) return 0;
+    const isMiniatura = MINIATURA_OPTIONS.includes(acc) || MINIATURA_DM_OPTIONS.includes(acc);
+    if (selectedSimpleStyle === "Ovo Simples com Miniatura") return isMiniatura ? 0 : 20;
+    if (selectedSimpleStyle === "Ovo Simples com Pel\u00facia") return isMiniatura ? -20 : 0;
+    if (selectedType === "Ovo Simples") return isMiniatura ? 15 : 35;
+    return isMiniatura ? 22 : 50;
+  };
 
   currentPrice += extraPrice;
+  currentPrice += getAccessoryPrice(selectedAccessory);
 
   const formattedCurrentPrice = currentPrice.toLocaleString("pt-BR", {
     style: "currency",
@@ -570,32 +656,82 @@ export default function EggsAssembler() {
         <div>
           <h3 style={titleStyle}>Escolha a versão:</h3>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
-            {SIMPLE_STYLES.slice(0, 2).map((style) => (
-              <button
-                key={style}
-                onClick={() => {
-                  if (style !== selectedSimpleStyle) setSelectedAccessory(null);
-                  setSelectedSimpleStyle(style);
-                }}
-                style={selectedSimpleStyle === style ? typeCardSelectedStyle : typeCardStyle}
-              >
-                <div style={{ width: "80px", height: "80px", flexShrink: 0, backgroundColor: "rgba(45,30,23,0.06)", borderRadius: "8px" }} />
-                <span style={{ fontSize: "0.85rem", fontWeight: "700", lineHeight: 1.3 }}>{style}</span>
-              </button>
-            ))}
-          </div>
-          <div style={{ display: "flex", justifyContent: "center", marginTop: "0.75rem" }}>
+            {/* Ovo Simples — ícone padrão */}
             <button
-              onClick={() => {
-                if (SIMPLE_STYLES[2] !== selectedSimpleStyle) setSelectedAccessory(null);
-                setSelectedSimpleStyle(SIMPLE_STYLES[2]);
-              }}
-              style={{ ...(selectedSimpleStyle === SIMPLE_STYLES[2] ? typeCardSelectedStyle : typeCardStyle), width: "100%" }}
+              onClick={() => { if ("Ovo Simples" !== selectedSimpleStyle) { setSelectedAccessory(null); setSelectedAccessoryCategory(null); } setSelectedSimpleStyle("Ovo Simples"); }}
+              style={selectedSimpleStyle === "Ovo Simples" ? typeCardSelectedStyle : typeCardStyle}
             >
-              <div style={{ width: "80px", height: "80px", flexShrink: 0, backgroundColor: "rgba(45,30,23,0.06)", borderRadius: "8px" }} />
-              <span style={{ fontSize: "0.85rem", fontWeight: "700", lineHeight: 1.3 }}>{SIMPLE_STYLES[2]}</span>
+              <div style={{ position: "relative", width: "80px", height: "80px", flexShrink: 0 }}>
+                {EGG_TYPE_ICONS["Ovo Simples"]}
+              </div>
+              <span style={{ fontSize: "0.85rem", fontWeight: "700", lineHeight: 1.3 }}>Ovo Simples</span>
+            </button>
+
+            {/* Ovo Simples com Miniatura — ovo + "+" */}
+            <button
+              onClick={() => { if ("Ovo Simples com Miniatura" !== selectedSimpleStyle) { setSelectedAccessory(null); setSelectedAccessoryCategory(null); } setSelectedSimpleStyle("Ovo Simples com Miniatura"); }}
+              style={selectedSimpleStyle === "Ovo Simples com Miniatura" ? typeCardSelectedStyle : typeCardStyle}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "4px", flexShrink: 0 }}>
+                <div style={{ position: "relative", width: "54px", height: "54px", flexShrink: 0 }}>
+                  {EGG_TYPE_ICONS["Ovo Simples"]}
+                </div>
+                <span style={{ fontSize: "1.3rem", fontWeight: "700", color: "#b8895a", lineHeight: 1 }}>+</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 48 48" style={{ marginTop: "10px" }}>
+                  <path fill="#fbd12c" d="M 13 20 L 5 5 A 2 2 0 0 1 8 4 L 21 15 Z" />
+                  <path fill="#212121" d="M 8.5 11 L 5 5 A 2 2 0 0 1 8 4 L 12.5 8 Z" />
+                  <path fill="#fbd12c" d="M 35 20 L 43 5 A 2 2 0 0 0 40 4 L 27 15 Z" />
+                  <path fill="#212121" d="M 39.5 11 L 43 5 A 2 2 0 0 0 40 4 L 35.5 8 Z" />
+                  <ellipse cx="24" cy="27" rx="15" ry="14" fill="#fbd12c"/>
+                  <circle cx="11.5" cy="30" r="3.5" fill="#ee2222"/>
+                  <circle cx="36.5" cy="30" r="3.5" fill="#ee2222"/>
+                  <ellipse cx="17" cy="24" rx="2.5" ry="3.5" fill="#212121"/>
+                  <circle cx="17.5" cy="22.5" r="1.2" fill="#fff"/>
+                  <ellipse cx="31" cy="24" rx="2.5" ry="3.5" fill="#212121"/>
+                  <circle cx="30.5" cy="22.5" r="1.2" fill="#fff"/>
+                  <polygon points="24,28.5 23.2,29.5 24.8,29.5" fill="#212121"/>
+                  <path fill="none" stroke="#212121" strokeWidth="1.2" strokeLinecap="round" d="M 20 31.5 C 20 31.5, 22 33, 24 31.5 C 24 31.5, 26 33, 28 31.5" />
+                </svg>
+              </div>
+              <span style={{ fontSize: "0.85rem", fontWeight: "700", lineHeight: 1.3 }}>Ovo Simples com Miniatura</span>
             </button>
           </div>
+
+          {/* Ovo Simples com Pelúcia — largura total: ovo + "+" + SVG Stitch */}
+          <div style={{ display: "flex", justifyContent: "center", marginTop: "0.75rem" }}>
+            <button
+              onClick={() => { if ("Ovo Simples com Pelúcia" !== selectedSimpleStyle) { setSelectedAccessory(null); setSelectedAccessoryCategory(null); } setSelectedSimpleStyle("Ovo Simples com Pelúcia"); }}
+              style={{ ...(selectedSimpleStyle === "Ovo Simples com Pelúcia" ? typeCardSelectedStyle : typeCardStyle), width: "100%" }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0 }}>
+                <div style={{ position: "relative", width: "54px", height: "54px", flexShrink: 0 }}>
+                  {EGG_TYPE_ICONS["Ovo Simples"]}
+                </div>
+                <span style={{ fontSize: "1.3rem", fontWeight: "700", color: "#b8895a", lineHeight: 1 }}>+</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 48 48" style={{ marginTop: "13px" }}>
+                  <path fill="#3a8ad3" d="M23.97,37c3.002-0.007,8.026-0.125,11.466-4.052c2.269-2.59,2.42-9.412-1.911-13.554c-1.855-1.773-3.44-3.603-9.555-3.765c-4.331-0.114-7.7,2.028-9.555,3.801c-4.331,4.141-4.037,10.849-1.911,13.554C15.562,36.875,20.971,37.007,23.97,37z"/>
+                  <path fill="#3a8ad3" d="M35.865,31.75c0,0-0.25-10.75,2.625-12.5L40.25,26l1.625,1.625C41.875,27.625,40.615,30.875,35.865,31.75z"/>
+                  <path fill="#fe9acc" d="M41.74,25.75c0,0-0.625,0.125-0.375,0.75c0.111,0.278,0.296,0.654,0.468,0.987c-2.344,2.028-4.718,2.763-4.718,2.763s2.125-6.25,1.375-11S37.86,6.955,40.615,6.125c1.245-0.375,6,1.875,5.75,11.625c-0.09,3.513-1.321,6.106-2.853,8H41.74z"/>
+                  <path fill="#3a8ad3" d="M12.37,31.75c0,0,0.25-10.75-2.625-12.5L8,24.75L6.375,27.5C6.375,27.5,7.62,30.875,12.37,31.75z"/>
+                  <path fill="#82cdec" d="M19.875,27.875c0-1.488,0.08-2.975,0-4.463c-0.082-1.51-0.5-3.412-2.122-3.729c-1.017-0.199-1.898-0.038-2.753,0.567c-1.778,1.259-2.404,3.795-2.523,5.817c-0.375,6.375,3.898,6.433,3.898,6.433S19.875,32.762,19.875,27.875z"/>
+                  <path fill="#1853b2" d="M26.659,25.084c0,0-1.247-0.496-2.659-0.459c-1.412-0.015-2.659,0.5-2.659,0.5s0.206-0.258,0.654-0.55c0.441-0.292,1.16-0.593,1.996-0.597c0.836-0.011,1.559,0.282,2.005,0.566C26.449,24.83,26.659,25.084,26.659,25.084z"/>
+                  <ellipse cx="24" cy="29.438" fill="#212121" rx="3.625" ry="3.567"/>
+                  <ellipse cx="16.382" cy="27.75" fill="#212121" rx="2.813" ry="3.75"/>
+                  <circle cx="16.819" cy="26" r="1" fill="#fff"/>
+                  <path fill="#fe9acc" d="M6.495,25.75c0,0,0.625,0.125,0.375,0.75c-0.111,0.278-0.296,0.654-0.468,0.987c2.344,2.028,4.718,2.763,4.718,2.763s-2.125-6.25-1.375-11S10.375,6.955,7.62,6.125C6.375,5.75,1.62,8,1.87,17.75c0.09,3.513,1.321,6.106,2.853,8H6.495z"/>
+                  <path fill="#212121" d="M33.25,33.118c0,0,0.125,0.257-0.625,0.757c-0.5,0.375-4.563,1.743-8.563,1.618c-5.375,0-7.683-1.377-8.036-1.535c-0.341-0.155-0.588-0.365-0.756-0.554c-0.336-0.386-0.396-0.662-0.396-0.662s0.242,0.23,0.625,0.507c0.19,0.136,0.562,0.303,0.875,0.375C16.675,33.695,21.4,34.5,24,34.5c2.638,0.02,7.822-0.645,8.25-0.875C33,33.375,33.25,33.118,33.25,33.118z"/>
+                  <path fill="#1853b2" d="M18.625,19.014c-0.017,0.047-0.724-0.59-1.5-0.639c-0.831-0.053-1.75,0.264-1.75,0.264s0.132-0.175,0.41-0.391c0.271-0.213,0.726-0.478,1.33-0.455c0.616,0.026,1.066,0.43,1.245,0.72C18.555,18.81,18.625,19.014,18.625,19.014z"/>
+                  <path fill="#1853b2" d="M29.625,19.084c0.011,0.005,0.003-0.234,0.192-0.582c0.172-0.34,0.72-0.764,1.373-0.708c0.639,0.047,1.092,0.394,1.343,0.667c0.256,0.281,0.342,0.498,0.342,0.498s-0.901-0.675-1.625-0.584c-0.433-0.032-0.902,0.173-1.184,0.354c-0.131,0.095-0.249,0.179-0.319,0.25C29.67,19.045,29.625,19.084,29.625,19.084z"/>
+                  <rect width="1" height="2.25" x="23.5" y="32.625" fill="#212121"/>
+                  <path fill="#82cdec" d="M28.204,27.873c0-1.488-0.08-2.975,0-4.463c0.082-1.51,0.5-3.412,2.122-3.729c1.017-0.199,1.898-0.038,2.753,0.567c1.778,1.259,2.404,3.795,2.523,5.817c0.375,6.375-3.898,6.433-3.898,6.433S28.204,32.76,28.204,27.873z"/>
+                  <ellipse cx="31.697" cy="27.747" fill="#212121" rx="2.813" ry="3.75"/>
+                  <circle cx="31.259" cy="25.997" r="1" fill="#fff"/>
+                </svg>
+              </div>
+              <span style={{ fontSize: "0.85rem", fontWeight: "700", lineHeight: 1.3 }}>Ovo Simples com Pelúcia</span>
+            </button>
+          </div>
+
           <button
             onClick={() => setStepIndex(stepIndex + 1)}
             disabled={!selectedSimpleStyle}
@@ -606,25 +742,148 @@ export default function EggsAssembler() {
         </div>
       )}
 
+      {currentStepName === "accessory_category" && (
+        <div>
+          <h3 style={titleStyle}>
+            {selectedSimpleStyle === "Ovo Simples com Miniatura" ? "Escolha a coleção de miniaturas:" : "Escolha a coleção de pelúcias:"}
+          </h3>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
+            {selectedSimpleStyle === "Ovo Simples com Miniatura" ? (
+              <>
+                <button
+                  onClick={() => { setSelectedAccessory(null); setSelectedAccessoryCategory("miniatura-pokemon"); }}
+                  style={selectedAccessoryCategory === "miniatura-pokemon" ? typeCardSelectedStyle : typeCardStyle}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 48 48" style={{ marginTop: "10px" }}>
+                    <path fill="#fbd12c" d="M 13 20 L 5 5 A 2 2 0 0 1 8 4 L 21 15 Z" />
+                    <path fill="#212121" d="M 8.5 11 L 5 5 A 2 2 0 0 1 8 4 L 12.5 8 Z" />
+                    <path fill="#fbd12c" d="M 35 20 L 43 5 A 2 2 0 0 0 40 4 L 27 15 Z" />
+                    <path fill="#212121" d="M 39.5 11 L 43 5 A 2 2 0 0 0 40 4 L 35.5 8 Z" />
+                    <ellipse cx="24" cy="27" rx="15" ry="14" fill="#fbd12c"/>
+                    <circle cx="11.5" cy="30" r="3.5" fill="#ee2222"/>
+                    <circle cx="36.5" cy="30" r="3.5" fill="#ee2222"/>
+                    <ellipse cx="17" cy="24" rx="2.5" ry="3.5" fill="#212121"/>
+                    <circle cx="17.5" cy="22.5" r="1.2" fill="#fff"/>
+                    <ellipse cx="31" cy="24" rx="2.5" ry="3.5" fill="#212121"/>
+                    <circle cx="30.5" cy="22.5" r="1.2" fill="#fff"/>
+                    <polygon points="24,28.5 23.2,29.5 24.8,29.5" fill="#212121"/>
+                    <path fill="none" stroke="#212121" strokeWidth="1.2" strokeLinecap="round" d="M 20 31.5 C 20 31.5, 22 33, 24 31.5 C 24 31.5, 26 33, 28 31.5" />
+                  </svg>
+                  <span style={{ fontSize: "0.85rem", fontWeight: "700", lineHeight: 1.3 }}>Miniaturas de Pokémon</span>
+                </button>
+                <button
+                  onClick={() => { setSelectedAccessory(null); setSelectedAccessoryCategory("miniatura-divertida"); }}
+                  style={{ ...typeCardStyle, ...(selectedAccessoryCategory === "miniatura-divertida" ? { backgroundColor: "#fff9f0", border: "2px solid #e2b05b" } : {}) }}
+                >
+                  <img src="/miniaturas/divertida_mente/alegria.png" alt="Divertida Mente" style={{ width: "72px", height: "72px", objectFit: "contain" }} />
+                  <span style={{ fontSize: "0.85rem", fontWeight: "700", lineHeight: 1.3 }}>Miniaturas de Divertida Mente</span>
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => { setSelectedAccessory(null); setSelectedAccessoryCategory("pelucia-pokemon"); }}
+                  style={selectedAccessoryCategory === "pelucia-pokemon" ? typeCardSelectedStyle : typeCardStyle}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 48 48" style={{ marginTop: "10px" }}>
+                    <path fill="#fbd12c" d="M 13 20 L 5 5 A 2 2 0 0 1 8 4 L 21 15 Z" />
+                    <path fill="#212121" d="M 8.5 11 L 5 5 A 2 2 0 0 1 8 4 L 12.5 8 Z" />
+                    <path fill="#fbd12c" d="M 35 20 L 43 5 A 2 2 0 0 0 40 4 L 27 15 Z" />
+                    <path fill="#212121" d="M 39.5 11 L 43 5 A 2 2 0 0 0 40 4 L 35.5 8 Z" />
+                    <ellipse cx="24" cy="27" rx="15" ry="14" fill="#fbd12c"/>
+                    <circle cx="11.5" cy="30" r="3.5" fill="#ee2222"/>
+                    <circle cx="36.5" cy="30" r="3.5" fill="#ee2222"/>
+                    <ellipse cx="17" cy="24" rx="2.5" ry="3.5" fill="#212121"/>
+                    <circle cx="17.5" cy="22.5" r="1.2" fill="#fff"/>
+                    <ellipse cx="31" cy="24" rx="2.5" ry="3.5" fill="#212121"/>
+                    <circle cx="30.5" cy="22.5" r="1.2" fill="#fff"/>
+                    <polygon points="24,28.5 23.2,29.5 24.8,29.5" fill="#212121"/>
+                    <path fill="none" stroke="#212121" strokeWidth="1.2" strokeLinecap="round" d="M 20 31.5 C 20 31.5, 22 33, 24 31.5 C 24 31.5, 26 33, 28 31.5" />
+                  </svg>
+                  <span style={{ fontSize: "0.85rem", fontWeight: "700", lineHeight: 1.3 }}>Pelúcias de Pokémon</span>
+                </button>
+                <button
+                  onClick={() => { setSelectedAccessory(null); setSelectedAccessoryCategory("pelucia-stitch"); }}
+                  style={selectedAccessoryCategory === "pelucia-stitch" ? typeCardSelectedStyle : typeCardStyle}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 48 48" style={{ marginTop: "13px" }}>
+                    <path fill="#3a8ad3" d="M23.97,37c3.002-0.007,8.026-0.125,11.466-4.052c2.269-2.59,2.42-9.412-1.911-13.554c-1.855-1.773-3.44-3.603-9.555-3.765c-4.331-0.114-7.7,2.028-9.555,3.801c-4.331,4.141-4.037,10.849-1.911,13.554C15.562,36.875,20.971,37.007,23.97,37z"/>
+                    <path fill="#3a8ad3" d="M35.865,31.75c0,0-0.25-10.75,2.625-12.5L40.25,26l1.625,1.625C41.875,27.625,40.615,30.875,35.865,31.75z"/>
+                    <path fill="#fe9acc" d="M41.74,25.75c0,0-0.625,0.125-0.375,0.75c0.111,0.278,0.296,0.654,0.468,0.987c-2.344,2.028-4.718,2.763-4.718,2.763s2.125-6.25,1.375-11S37.86,6.955,40.615,6.125c1.245-0.375,6,1.875,5.75,11.625c-0.09,3.513-1.321,6.106-2.853,8H41.74z"/>
+                    <path fill="#3a8ad3" d="M12.37,31.75c0,0,0.25-10.75-2.625-12.5L8,24.75L6.375,27.5C6.375,27.5,7.62,30.875,12.37,31.75z"/>
+                    <path fill="#82cdec" d="M19.875,27.875c0-1.488,0.08-2.975,0-4.463c-0.082-1.51-0.5-3.412-2.122-3.729c-1.017-0.199-1.898-0.038-2.753,0.567c-1.778,1.259-2.404,3.795-2.523,5.817c-0.375,6.375,3.898,6.433,3.898,6.433S19.875,32.762,19.875,27.875z"/>
+                    <path fill="#1853b2" d="M26.659,25.084c0,0-1.247-0.496-2.659-0.459c-1.412-0.015-2.659,0.5-2.659,0.5s0.206-0.258,0.654-0.55c0.441-0.292,1.16-0.593,1.996-0.597c0.836-0.011,1.559,0.282,2.005,0.566C26.449,24.83,26.659,25.084,26.659,25.084z"/>
+                    <ellipse cx="24" cy="29.438" fill="#212121" rx="3.625" ry="3.567"/>
+                    <ellipse cx="16.382" cy="27.75" fill="#212121" rx="2.813" ry="3.75"/>
+                    <circle cx="16.819" cy="26" r="1" fill="#fff"/>
+                    <path fill="#fe9acc" d="M6.495,25.75c0,0,0.625,0.125,0.375,0.75c-0.111,0.278-0.296,0.654-0.468,0.987c2.344,2.028,4.718,2.763,4.718,2.763s-2.125-6.25-1.375-11S10.375,6.955,7.62,6.125C6.375,5.75,1.62,8,1.87,17.75c0.09,3.513,1.321,6.106,2.853,8H6.495z"/>
+                    <path fill="#212121" d="M33.25,33.118c0,0,0.125,0.257-0.625,0.757c-0.5,0.375-4.563,1.743-8.563,1.618c-5.375,0-7.683-1.377-8.036-1.535c-0.341-0.155-0.588-0.365-0.756-0.554c-0.336-0.386-0.396-0.662-0.396-0.662s0.242,0.23,0.625,0.507c0.19,0.136,0.562,0.303,0.875,0.375C16.675,33.695,21.4,34.5,24,34.5c2.638,0.02,7.822-0.645,8.25-0.875C33,33.375,33.25,33.118,33.25,33.118z"/>
+                    <path fill="#1853b2" d="M18.625,19.014c-0.017,0.047-0.724-0.59-1.5-0.639c-0.831-0.053-1.75,0.264-1.75,0.264s0.132-0.175,0.41-0.391c0.271-0.213,0.726-0.478,1.33-0.455c0.616,0.026,1.066,0.43,1.245,0.72C18.555,18.81,18.625,19.014,18.625,19.014z"/>
+                    <path fill="#1853b2" d="M29.625,19.084c0.011,0.005,0.003-0.234,0.192-0.582c0.172-0.34,0.72-0.764,1.373-0.708c0.639,0.047,1.092,0.394,1.343,0.667c0.256,0.281,0.342,0.498,0.342,0.498s-0.901-0.675-1.625-0.584c-0.433-0.032-0.902,0.173-1.184,0.354c-0.131,0.095-0.249,0.179-0.319,0.25C29.67,19.045,29.625,19.084,29.625,19.084z"/>
+                    <rect width="1" height="2.25" x="23.5" y="32.625" fill="#212121"/>
+                    <path fill="#82cdec" d="M28.204,27.873c0-1.488-0.08-2.975,0-4.463c0.082-1.51,0.5-3.412,2.122-3.729c1.017-0.199,1.898-0.038,2.753,0.567c1.778,1.259,2.404,3.795,2.523,5.817c0.375,6.375-3.898,6.433-3.898,6.433S28.204,32.76,28.204,27.873z"/>
+                    <ellipse cx="31.697" cy="27.747" fill="#212121" rx="2.813" ry="3.75"/>
+                    <circle cx="31.259" cy="25.997" r="1" fill="#fff"/>
+                  </svg>
+                  <span style={{ fontSize: "0.85rem", fontWeight: "700", lineHeight: 1.3 }}>Pelúcias de Lilo & Stitch</span>
+                </button>
+              </>
+            )}
+          </div>
+          <button
+            onClick={() => setStepIndex(stepIndex + 1)}
+            disabled={!selectedAccessoryCategory}
+            style={{ ...continueBtnStyle, opacity: selectedAccessoryCategory ? 1 : 0.5, cursor: selectedAccessoryCategory ? "pointer" : "not-allowed" }}
+          >
+            Continuar ➔
+          </button>
+        </div>
+      )}
+
       {currentStepName === "accessory" && (
         <div>
           <h3 style={titleStyle}>
-            {selectedSimpleStyle === "Ovo Simples com Miniatura" ? "Escolha a miniatura:" : "Escolha a pelúcia:"}
+            {selectedAccessoryCategory === "miniatura-pokemon" || selectedAccessoryCategory === "miniatura-divertida" ? "Escolha a miniatura:" : "Escolha a pelúcia:"}
           </h3>
-          {selectedSimpleStyle === "Ovo Simples com Pelúcia" && (
+          {selectedAccessoryCategory !== "miniatura-pokemon" && selectedAccessoryCategory !== "miniatura-divertida" && (
             <p style={subtitleStyle}>OBS.: Todas as pelúcias têm aproximadamente 20cm.</p>
           )}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
-            {(selectedSimpleStyle === "Ovo Simples com Miniatura" ? MINIATURA_OPTIONS : PELUCIA_OPTIONS).map((opt) => (
-              <button
-                key={opt}
-                onClick={() => setSelectedAccessory(opt)}
-                style={selectedAccessory === opt ? typeCardSelectedStyle : typeCardStyle}
-              >
-                <div style={{ width: "80px", height: "80px", flexShrink: 0, backgroundColor: "rgba(45,30,23,0.06)", borderRadius: "8px" }} />
-                <span style={{ fontSize: "0.85rem", fontWeight: "700", lineHeight: 1.3 }}>{opt}</span>
-              </button>
-            ))}
+            {(selectedAccessoryCategory === "miniatura-pokemon"
+              ? MINIATURA_OPTIONS
+              : selectedAccessoryCategory === "miniatura-divertida"
+                ? MINIATURA_DM_OPTIONS
+                : selectedAccessoryCategory === "pelucia-stitch"
+                  ? PELUCIA_STITCH_OPTIONS
+                  : PELUCIA_POKEMON_OPTIONS
+            ).map((opt) => {
+              const outOfStock = isOutOfStock(opt);
+              return (
+                <button
+                  key={opt}
+                  onClick={() => !outOfStock && setSelectedAccessory(opt)}
+                  disabled={outOfStock}
+                  style={{
+                    ...(selectedAccessory === opt ? typeCardSelectedStyle : typeCardStyle),
+                    opacity: outOfStock ? 0.5 : 1,
+                    cursor: outOfStock ? "not-allowed" : "pointer",
+                    position: "relative",
+                  }}
+                >
+                  <div style={{ position: "relative" }}>
+                    <img
+                      src={ACCESSORY_IMAGE[opt]}
+                      alt={opt}
+                      style={{ width: "80px", height: "80px", flexShrink: 0, objectFit: "contain", filter: outOfStock ? "grayscale(0.7)" : "none" }}
+                    />
+                    {outOfStock && (
+                      <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "rgba(255,255,255,0.65)", borderRadius: "8px", fontSize: "0.6rem", fontWeight: "800", color: "#dc3545", letterSpacing: "0.05em" }}>ESGOTADO</div>
+                    )}
+                  </div>
+                  <span style={{ fontSize: "0.85rem", fontWeight: "700", lineHeight: 1.3 }}>{opt}</span>
+                </button>
+              );
+            })}
           </div>
           <button
             onClick={() => setStepIndex(stepIndex + 1)}
@@ -841,7 +1100,8 @@ export default function EggsAssembler() {
           <div style={gridStyle}>
             {ADDITIONAL_OPT.map((opt) => {
               const isSelected = additionals.includes(opt);
-              const priceStr = `+ R$ ${ADDITIONALS_PRICES[opt].toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+              const addPrice = selectedType === "Mini Ovos" ? 4.0 : (ADDITIONALS_PRICES[opt] || 0);
+              const priceStr = `+ R$ ${addPrice.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
               return (
                 <button
                   key={opt}
@@ -913,13 +1173,130 @@ export default function EggsAssembler() {
 
             {/* Detalhes */}
             <div style={{ padding: "0.25rem 0" }}>
-              {selectedAccessory && (
-                <div style={summaryRowStyle}>
-                  <span style={summaryLabelStyle}>Acessório</span>
-                  <span style={summaryValueStyle}>{selectedAccessory}</span>
+            {/* Acessório widget */}
+            {accessoryEditMode === "category" ? (
+              <div style={{ padding: "0.5rem 1.2rem 1rem", borderBottom: "1px solid #f0ebe0" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.6rem" }}>
+                  <span style={summaryLabelStyle}>Escolha a coleção</span>
+                  <button onClick={() => setAccessoryEditMode(null)} style={{ background: "none", border: "none", color: "#999", fontSize: "0.8rem", cursor: "pointer", fontWeight: "600" }}>✕ Cancelar</button>
                 </div>
-              )}
-              {shells.length > 0 && (
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                  {(selectedSimpleStyle === "Ovo Simples com Miniatura"
+                    ? [{ label: "Miniaturas de Pokémon", cat: "miniatura-pokemon", icon: "pikachu", disabled: false }, { label: "Miniaturas Divertida Mente", cat: "miniatura-divertida", icon: "dm", disabled: false }]
+                    : selectedSimpleStyle === "Ovo Simples com Pelúcia"
+                      ? [{ label: "Pelúcias Pokémon", cat: "pelucia-pokemon", icon: "pikachu", disabled: false }, { label: "Pelúcias Lilo & Stitch", cat: "pelucia-stitch", icon: "stitch", disabled: false }]
+                      : [{ label: "Miniaturas Pokémon", cat: "miniatura-pokemon", icon: "pikachu", disabled: false }, { label: "Pelúcias Pokémon", cat: "pelucia-pokemon", icon: "pikachu", disabled: false }, { label: "Pelúcias Lilo & Stitch", cat: "pelucia-stitch", icon: "stitch", disabled: false }, { label: "Miniaturas Divertida Mente", cat: "miniatura-divertida", icon: "dm", disabled: false }]
+                  ).map((opt) => (
+                    <button
+                      key={opt.cat || opt.label}
+                      disabled={opt.disabled}
+                      onClick={() => { if (!opt.disabled && opt.cat) { setSelectedAccessory(null); setSelectedAccessoryCategory(opt.cat); setAccessoryEditMode("item"); } }}
+                      style={{ ...typeCardStyle, minHeight: "auto", padding: "0.5rem 0.4rem", opacity: opt.disabled ? 0.45 : 1, cursor: opt.disabled ? "not-allowed" : "pointer", ...(selectedAccessoryCategory === opt.cat && opt.cat ? { backgroundColor: "#fff9f0", border: "2px solid #e2b05b" } : {}) }}
+                    >
+                      {opt.icon === "dm" && <img src="/miniaturas/divertida_mente/alegria.png" alt="Divertida Mente" style={{ width: "36px", height: "36px", objectFit: "contain" }} />}
+                      {opt.icon === "pikachu" && (
+                        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 48 48">
+                          <path fill="#fbd12c" d="M 13 20 L 5 5 A 2 2 0 0 1 8 4 L 21 15 Z" /><path fill="#212121" d="M 8.5 11 L 5 5 A 2 2 0 0 1 8 4 L 12.5 8 Z" />
+                          <path fill="#fbd12c" d="M 35 20 L 43 5 A 2 2 0 0 0 40 4 L 27 15 Z" /><path fill="#212121" d="M 39.5 11 L 43 5 A 2 2 0 0 0 40 4 L 35.5 8 Z" />
+                          <ellipse cx="24" cy="27" rx="15" ry="14" fill="#fbd12c"/>
+                          <circle cx="11.5" cy="30" r="3.5" fill="#ee2222"/><circle cx="36.5" cy="30" r="3.5" fill="#ee2222"/>
+                          <ellipse cx="17" cy="24" rx="2.5" ry="3.5" fill="#212121"/><circle cx="17.5" cy="22.5" r="1.2" fill="#fff"/>
+                          <ellipse cx="31" cy="24" rx="2.5" ry="3.5" fill="#212121"/><circle cx="30.5" cy="22.5" r="1.2" fill="#fff"/>
+                          <polygon points="24,28.5 23.2,29.5 24.8,29.5" fill="#212121"/>
+                          <path fill="none" stroke="#212121" strokeWidth="1.2" strokeLinecap="round" d="M 20 31.5 C 20 31.5, 22 33, 24 31.5 C 24 31.5, 26 33, 28 31.5" />
+                        </svg>
+                      )}
+                      {opt.icon === "stitch" && (
+                        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 48 48">
+                          <path fill="#3a8ad3" d="M23.97,37c3.002-0.007,8.026-0.125,11.466-4.052c2.269-2.59,2.42-9.412-1.911-13.554c-1.855-1.773-3.44-3.603-9.555-3.765c-4.331-0.114-7.7,2.028-9.555,3.801c-4.331,4.141-4.037,10.849-1.911,13.554C15.562,36.875,20.971,37.007,23.97,37z"/>
+                          <path fill="#3a8ad3" d="M35.865,31.75c0,0-0.25-10.75,2.625-12.5L40.25,26l1.625,1.625C41.875,27.625,40.615,30.875,35.865,31.75z"/>
+                          <path fill="#fe9acc" d="M41.74,25.75c0,0-0.625,0.125-0.375,0.75c0.111,0.278,0.296,0.654,0.468,0.987c-2.344,2.028-4.718,2.763-4.718,2.763s2.125-6.25,1.375-11S37.86,6.955,40.615,6.125c1.245-0.375,6,1.875,5.75,11.625c-0.09,3.513-1.321,6.106-2.853,8H41.74z"/>
+                          <path fill="#3a8ad3" d="M12.37,31.75c0,0,0.25-10.75-2.625-12.5L8,24.75L6.375,27.5C6.375,27.5,7.62,30.875,12.37,31.75z"/>
+                          <path fill="#fe9acc" d="M6.495,25.75c0,0,0.625,0.125,0.375,0.75c-0.111,0.278-0.296,0.654-0.468,0.987c2.344,2.028,4.718,2.763,4.718,2.763s-2.125-6.25-1.375-11S10.375,6.955,7.62,6.125C6.375,5.75,1.62,8,1.87,17.75c0.09,3.513,1.321,6.106,2.853,8H6.495z"/>
+                          <path fill="#82cdec" d="M19.875,27.875c0-1.488,0.08-2.975,0-4.463c-0.082-1.51-0.5-3.412-2.122-3.729c-1.017-0.199-1.898-0.038-2.753,0.567c-1.778,1.259-2.404,3.795-2.523,5.817c-0.375,6.375,3.898,6.433,3.898,6.433S19.875,32.762,19.875,27.875z"/>
+                          <path fill="#82cdec" d="M28.204,27.873c0-1.488-0.08-2.975,0-4.463c0.082-1.51,0.5-3.412,2.122-3.729c1.017-0.199,1.898-0.038,2.753,0.567c1.778,1.259,2.404,3.795,2.523,5.817c0.375,6.375-3.898,6.433-3.898,6.433S28.204,32.76,28.204,27.873z"/>
+                          <path fill="#1853b2" d="M26.659,25.084c0,0-1.247-0.496-2.659-0.459c-1.412-0.015-2.659,0.5-2.659,0.5s0.206-0.258,0.654-0.55c0.441-0.292,1.16-0.593,1.996-0.597c0.836-0.011,1.559,0.282,2.005,0.566C26.449,24.83,26.659,25.084,26.659,25.084z"/>
+                          <ellipse cx="24" cy="29.438" fill="#212121" rx="3.625" ry="3.567"/>
+                          <ellipse cx="16.382" cy="27.75" fill="#212121" rx="2.813" ry="3.75"/><circle cx="16.819" cy="26" r="1" fill="#fff"/>
+                          <path fill="#212121" d="M33.25,33.118c0,0,0.125,0.257-0.625,0.757c-0.5,0.375-4.563,1.743-8.563,1.618c-5.375,0-7.683-1.377-8.036-1.535c-0.341-0.155-0.588-0.365-0.756-0.554c-0.336-0.386-0.396-0.662-0.396-0.662s0.242,0.23,0.625,0.507c0.19,0.136,0.562,0.303,0.875,0.375C16.675,33.695,21.4,34.5,24,34.5c2.638,0.02,7.822-0.645,8.25-0.875C33,33.375,33.25,33.118,33.25,33.118z"/>
+                          <path fill="#1853b2" d="M18.625,19.014c-0.017,0.047-0.724-0.59-1.5-0.639c-0.831-0.053-1.75,0.264-1.75,0.264s0.132-0.175,0.41-0.391c0.271-0.213,0.726-0.478,1.33-0.455c0.616,0.026,1.066,0.43,1.245,0.72C18.555,18.81,18.625,19.014,18.625,19.014z"/>
+                          <path fill="#1853b2" d="M29.625,19.084c0.011,0.005,0.003-0.234,0.192-0.582c0.172-0.34,0.72-0.764,1.373-0.708c0.639,0.047,1.092,0.394,1.343,0.667c0.256,0.281,0.342,0.498,0.342,0.498s-0.901-0.675-1.625-0.584c-0.433-0.032-0.902,0.173-1.184,0.354c-0.131,0.095-0.249,0.179-0.319,0.25C29.67,19.045,29.625,19.084,29.625,19.084z"/>
+                          <rect width="1" height="2.25" x="23.5" y="32.625" fill="#212121"/>
+                          <ellipse cx="31.697" cy="27.747" fill="#212121" rx="2.813" ry="3.75"/><circle cx="31.259" cy="25.997" r="1" fill="#fff"/>
+                        </svg>
+                      )}
+                      <span style={{ fontSize: "0.72rem", fontWeight: "700", lineHeight: 1.2, textAlign: "center" }}>{opt.label}</span>
+                      {opt.disabled && <span style={{ fontSize: "0.65rem", color: "#b8895a", fontWeight: "600" }}>Em breve</span>}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : accessoryEditMode === "item" ? (
+              <div style={{ padding: "0.5rem 1.2rem 1rem", borderBottom: "1px solid #f0ebe0" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.6rem" }}>
+                  <button onClick={() => setAccessoryEditMode("category")} style={{ background: "none", border: "none", color: "#666", fontSize: "0.8rem", cursor: "pointer", fontWeight: "600" }}>← Voltar</button>
+                  <button onClick={() => setAccessoryEditMode(null)} style={{ background: "none", border: "none", color: "#999", fontSize: "0.8rem", cursor: "pointer", fontWeight: "600" }}>✕ Cancelar</button>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                  {(selectedAccessoryCategory === "miniatura-pokemon"
+                    ? MINIATURA_OPTIONS
+                    : selectedAccessoryCategory === "miniatura-divertida"
+                      ? MINIATURA_DM_OPTIONS
+                      : selectedAccessoryCategory === "pelucia-stitch"
+                        ? PELUCIA_STITCH_OPTIONS
+                        : PELUCIA_POKEMON_OPTIONS
+                  ).map((opt) => {
+                    const p = getAccessoryPrice(opt);
+                    const pStr = p === 0 ? "Incluso" : p > 0
+                      ? `+${p.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}`
+                      : p.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+                    const outOfStock = isOutOfStock(opt);
+                    return (
+                      <button
+                        key={opt}
+                        disabled={outOfStock}
+                        onClick={() => { if (!outOfStock) { setSelectedAccessory(opt); setAccessoryEditMode(null); } }}
+                        style={{ ...typeCardStyle, minHeight: "auto", padding: "0.5rem", opacity: outOfStock ? 0.5 : 1, cursor: outOfStock ? "not-allowed" : "pointer", ...(selectedAccessory === opt ? { backgroundColor: "#fff9f0", border: "2px solid #e2b05b" } : {}) }}
+                      >
+                        <div style={{ position: "relative" }}>
+                          <img src={ACCESSORY_IMAGE[opt]} alt={opt} style={{ width: "56px", height: "56px", objectFit: "contain", filter: outOfStock ? "grayscale(0.7)" : "none" }} />
+                          {outOfStock && (
+                            <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "rgba(255,255,255,0.65)", borderRadius: "6px", fontSize: "0.55rem", fontWeight: "800", color: "#dc3545", letterSpacing: "0.05em" }}>ESGOTADO</div>
+                          )}
+                        </div>
+                        <span style={{ fontSize: "0.72rem", fontWeight: "700", lineHeight: 1.2, textAlign: "center" }}>{opt}</span>
+                        <span style={{ fontSize: "0.7rem", fontWeight: "700", color: outOfStock ? "#dc3545" : p < 0 ? "#4caf50" : p === 0 ? "#aaa" : "#e2b05b" }}>{outOfStock ? "Esgotado" : pStr}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : (
+              <div style={{ ...summaryRowStyle }}>
+                <span style={summaryLabelStyle}>Acessório</span>
+                {selectedAccessory ? (
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.35rem" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                      <img src={ACCESSORY_IMAGE[selectedAccessory]} alt={selectedAccessory} style={{ width: "42px", height: "42px", objectFit: "contain" }} />
+                      <span style={summaryValueStyle}>{selectedAccessory}</span>
+                    </div>
+                    {(() => { const p = getAccessoryPrice(selectedAccessory); const s = p === 0 ? "Incluso" : p > 0 ? `+${p.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}` : p.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }); return <span style={{ fontSize: "0.75rem", color: p < 0 ? "#4caf50" : p === 0 ? "#aaa" : "#e2b05b", fontWeight: "700" }}>{s}</span>; })()}
+                    <div style={{ display: "flex", gap: "0.4rem" }}>
+                      <button onClick={() => setAccessoryEditMode("category")} style={{ background: "none", border: "1px solid #e8dfce", borderRadius: "6px", padding: "0.2rem 0.6rem", fontSize: "0.75rem", color: "#2d1e17", cursor: "pointer", fontWeight: "600" }}>✏ Trocar</button>
+                      {selectedSimpleStyle !== "Ovo Simples com Miniatura" && selectedSimpleStyle !== "Ovo Simples com Pelúcia" && (
+                        <button onClick={() => { setSelectedAccessory(null); setSelectedAccessoryCategory(null); }} style={{ background: "none", border: "1px solid #e8dfce", borderRadius: "6px", padding: "0.2rem 0.6rem", fontSize: "0.75rem", color: "#cc3333", cursor: "pointer", fontWeight: "600" }}>✕ Remover</button>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                    <span style={{ ...summaryValueStyle, color: "#bbb" }}>Nenhum</span>
+                    <button onClick={() => setAccessoryEditMode("category")} style={{ background: "none", border: "1px solid #e2b05b", borderRadius: "6px", padding: "0.2rem 0.75rem", fontSize: "0.75rem", color: "#b8895a", cursor: "pointer", fontWeight: "700" }}>+ Adicionar</button>
+                  </div>
+                )}
+              </div>
+            )}
+            {shells.length > 0 && (
                 <div style={summaryRowStyle}>
                   <span style={summaryLabelStyle}>
                     {shells.length > 1 ? "Cascas" : "Casca"}
