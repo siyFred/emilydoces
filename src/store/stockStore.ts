@@ -55,7 +55,7 @@ export const SOLD_OUT: Record<string, boolean> = {
   // "Pelúcia do Lapras": true,
 
   // Pelúcias Lilo & Stitch
-  // "Pelúcia do Stitch Rosa": true,
+  "Pelúcia do Stitch Rosa": true,
 };
 
 const ALL_ITEMS = Object.values(STOCK_ITEMS).flat();
