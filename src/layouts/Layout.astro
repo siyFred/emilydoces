@@ -2,6 +2,7 @@
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import FloatingEggs from "../components/FloatingEggs.astro";
+import Analytics from '@vercel/analytics/astro';
 
 interface Props {
   title: string;
@@ -20,6 +21,7 @@ const { title } = Astro.props;
     <meta name="description" content="Monte seu ovo de Páscoa personalizado com a Emily Doces. Escolha recheios, cascas e acompanhamentos e finalize seu pedido pelo WhatsApp!" />
     <link rel="preload" as="image" href="/logo.png" fetchpriority="high" />
     <title>{title}</title>
+    <Analytics />
   </head>
   <body
     style="margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, sans-serif; display: flex; flex-direction: column; min-height: 100dvh;"
