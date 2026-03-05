@@ -909,6 +909,11 @@ export default function EggsAssembler() {
               </button>
             ))}
           </div>
+          {selectedSubtype === "Ovo de Colher de Guloseimas" && (
+            <p style={{ margin: "0.75rem 0 0.25rem", fontSize: "0.82rem", color: "#7a5c3a", backgroundColor: "#fff9ee", border: "1px solid #e2b05b", borderRadius: "8px", padding: "0.55rem 0.75rem", lineHeight: 1.5 }}>
+              <strong>OBS.:</strong> Os acompanhamentos deste ovo são os seguintes guloseimas: Balas Fini variadas; Disquete; Jujuba; Marshmallow; Tortuguita.
+            </p>
+          )}
           <button
             onClick={() => setStepIndex(stepIndex + 1)}
             disabled={!selectedSubtype}
@@ -926,6 +931,11 @@ export default function EggsAssembler() {
       {currentStepName === "size" && (
         <div>
           <h3 style={titleStyle}>Escolha o tamanho:</h3>
+          {selectedSubtype === "Ovo de Colher de Guloseimas" && (
+            <p style={{ margin: "0 0 0.75rem", fontSize: "0.82rem", color: "#7a5c3a", backgroundColor: "#fff9ee", border: "1px solid #e2b05b", borderRadius: "8px", padding: "0.55rem 0.75rem", lineHeight: 1.5 }}>
+              <strong>OBS.:</strong> Os acompanhamentos deste ovo são os seguintes guloseimas: Balas Fini variadas; Disquete; Jujuba; Marshmallow; Tortuguita.
+            </p>
+          )}
           <div style={gridStyle}>
             {currentKey && SIZES_BY_TYPE[currentKey]?.map((size) => {
               const priceForThisSize =
@@ -969,6 +979,11 @@ export default function EggsAssembler() {
               ? `Escolha a casca (${shellSlot + 1} de ${activeRules.cascas}):`
               : "Escolha a casca:"}
           </h3>
+          {selectedSubtype === "Ovo de Colher de Guloseimas" && (
+            <p style={{ margin: "0 0 0.75rem", fontSize: "0.82rem", color: "#7a5c3a", backgroundColor: "#fff9ee", border: "1px solid #e2b05b", borderRadius: "8px", padding: "0.55rem 0.75rem", lineHeight: 1.5 }}>
+              <strong>OBS.:</strong> Os acompanhamentos deste ovo são os seguintes guloseimas: Balas Fini variadas; Disquete; Jujuba; Marshmallow; Tortuguita.
+            </p>
+          )}
           <div style={gridStyle}>
             {currentShellOptions.map((opt) => (
               <button
@@ -1012,6 +1027,11 @@ export default function EggsAssembler() {
               ? `Escolha o recheio (${fillingSlot + 1} de ${activeRules.recheios}):`
               : "Escolha o recheio:"}
           </h3>
+          {selectedSubtype === "Ovo de Colher de Guloseimas" && (
+            <p style={{ margin: "0 0 0.75rem", fontSize: "0.82rem", color: "#7a5c3a", backgroundColor: "#fff9ee", border: "1px solid #e2b05b", borderRadius: "8px", padding: "0.55rem 0.75rem", lineHeight: 1.5 }}>
+              <strong>OBS.:</strong> Os acompanhamentos deste ovo são as seguintes guloseimas: Balas Fini variadas; Disquete; Jujuba; Marshmallow; Tortuguita.
+            </p>
+          )}
           <div style={gridStyle}>
             {FILLING_OPT.map((opt) => (
               <button
@@ -1349,6 +1369,12 @@ export default function EggsAssembler() {
               boxSizing: "border-box",
             }}
           />
+
+          {selectedSubtype === "Ovo de Colher de Guloseimas" && (
+            <p style={{ margin: "0 0 1rem", fontSize: "0.82rem", color: "#7a5c3a", backgroundColor: "#fff9ee", border: "1px solid #e2b05b", borderRadius: "8px", padding: "0.55rem 0.75rem", lineHeight: 1.5 }}>
+              <strong>OBS.:</strong> Os acompanhamentos deste ovo são as seguintes guloseimas: Balas Fini variadas; Disquete; Jujuba; Marshmallow; Tortuguita.
+            </p>
+          )}
 
           <button
             onClick={handleAddToCart}
