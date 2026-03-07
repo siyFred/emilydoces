@@ -8,11 +8,13 @@ import SpeedInsights from "@vercel/speed-insights/astro";
 interface Props {
   title: string;
   description?: string;
+  noindex?: boolean;
 }
 
 const {
   title,
   description = "Monte seu ovo de Páscoa personalizado com a Emily Doces. Escolha recheios, cascas e acompanhamentos e finalize seu pedido pelo WhatsApp!",
+  noindex = false,
 } = Astro.props;
 
 const siteUrl = Astro.site ?? new URL("https://emilydoces.vercel.app");
@@ -26,7 +28,7 @@ const canonical = new URL(Astro.url.pathname, siteUrl).href;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/png" href="/favicon.png" />
-    <meta name="generator" content={Astro.generator} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
     <meta name="description" content={description} />
 
     <!-- Open Graph / WhatsApp -->
