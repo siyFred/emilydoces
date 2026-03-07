@@ -1,9 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useStore } from "@nanostores/react";
 
 import { addItemToCart } from "../store/cartStore.ts";
 import { EGG_TYPE_ICONS } from "./EggTypeIcons";
-import { stockStore } from "../store/stockStore.ts";
+import { isOutOfStock } from "../store/stockStore.ts";
 
 const EGG_TYPES = [
   "Ovo de Colher",
@@ -202,12 +201,6 @@ const ACCESSORY_IMAGE: Record<string, string> = {
 };
 
 export default function EggsAssembler() {
-  const stock = useStore(stockStore);
-  const isOutOfStock = (item: string) => {
-    const s = stock[item];
-    return s !== null && s !== undefined && s <= 0;
-  };
-
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [selectedSubtype, setSelectedSubtype] = useState<string | null>(null);
   const [selectedSimpleStyle, setSelectedSimpleStyle] = useState<string | null>(null);
@@ -339,24 +332,6 @@ export default function EggsAssembler() {
       setToppings([]);
     }
     setSelectedSize(size);
-  };
-
-  const handleToggleItem = (
-    item: string,
-    list: string[],
-    setList: React.Dispatch<React.SetStateAction<string[]>>,
-    maxLimit: number,
-    currStep: string,
-  ) => {
-    if (list.includes(item)) {
-      setList(list.filter((i) => i !== item));
-    } else if (list.length < maxLimit) {
-      setList([...list, item]);
-    } else {
-      alert(
-        `Você só pode escolher ${maxLimit} ${currStep}${maxLimit > 1 ? "s" : ""}.`,
-      );
-    }
   };
 
   const currentShellOptions =

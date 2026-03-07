@@ -1,0 +1,62 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Página não encontrada | Emily Confeitaria">
+  <section style={{
+    flex: "1",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    textAlign: "center",
+    gap: "0.6rem",
+  }}>
+    <svg width="52" height="68" viewBox="0 0 40 52" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M20 3C11 3 5 13 5 26C5 39 11 49 20 49C29 49 35 39 35 26C35 13 29 3 20 3Z" fill="#e2b05b" opacity="0.35"/>
+      <text x="20" y="30" text-anchor="middle" font-size="16" font-weight="900" fill="#b8895a" font-family="system-ui, sans-serif">?</text>
+    </svg>
+
+    <h1 style={{ color: "#2d1e17", fontSize: "clamp(1.4rem, 4vw, 2rem)", margin: 0 }}>
+      Página não encontrada
+    </h1>
+
+    <p style={{ color: "#777", fontSize: "0.9rem", maxWidth: "360px", lineHeight: 1.5, margin: 0 }}>
+      Ops! Este endereço não existe. Que tal voltar para o início e montar seu ovo?
+    </p>
+
+    <a href="/" class="btn-voltar">
+      ← Voltar para o início
+    </a>
+  </section>
+</Layout>
+
+<style>
+  .btn-voltar {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+    padding: 0.65rem 2rem;
+    background-color: #2d1e17;
+    color: #e2b05b;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 800;
+    font-size: 1rem;
+    border: 2px solid transparent;
+    box-shadow: 0 4px 18px rgba(45, 30, 23, 0.2);
+    transition: background-color 0.25s, color 0.25s, border-color 0.25s, transform 0.15s;
+  }
+
+  .btn-voltar:hover {
+    background-color: #e2b05b;
+    color: #2d1e17;
+    border-color: #2d1e17;
+    transform: translateY(-2px);
+  }
+
+  .btn-voltar:active {
+    transform: translateY(0);
+  }
+</style>

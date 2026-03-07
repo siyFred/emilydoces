@@ -7,9 +7,17 @@ import SpeedInsights from "@vercel/speed-insights/astro";
 
 interface Props {
   title: string;
+  description?: string;
 }
 
-const { title } = Astro.props;
+const {
+  title,
+  description = "Monte seu ovo de Páscoa personalizado com a Emily Doces. Escolha recheios, cascas e acompanhamentos e finalize seu pedido pelo WhatsApp!",
+} = Astro.props;
+
+const siteUrl = Astro.site ?? new URL("https://emilydoces.vercel.app");
+const ogImage = new URL("/logo.png", siteUrl).href;
+const canonical = new URL(Astro.url.pathname, siteUrl).href;
 ---
 
 <!doctype html>
@@ -19,7 +27,24 @@ const { title } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="generator" content={Astro.generator} />
-    <meta name="description" content="Monte seu ovo de Páscoa personalizado com a Emily Doces. Escolha recheios, cascas e acompanhamentos e finalize seu pedido pelo WhatsApp!" />
+    <meta name="description" content={description} />
+
+    <!-- Open Graph / WhatsApp -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Emily Doces" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content="pt_BR" />
+
+    <!-- Twitter / iMessage -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <link rel="canonical" href={canonical} />
     <link rel="preload" as="image" href="/logo.png" fetchpriority="high" />
     <title>{title}</title>
     <Analytics />
