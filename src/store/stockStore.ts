@@ -11,8 +11,10 @@ export const SOLD_OUT: Record<string, boolean> = {
 
   // Pelúcias Pokémon
   // "Pelúcia do Lapras": true,
+  "Pelúcia do Pikachu": true,
 
   // Pelúcias Lilo & Stitch
+  "Pelúcia do Stitch Azul": true,
   "Pelúcia do Stitch Rosa": true,
 };
 

@@ -109,7 +109,6 @@ const TOPPING_OPT = [
   "Bis Chocolate",
   "Bis Branco",
   "Bis Limão",
-  "Paçoca",
   "Brownie",
   "Oreo",
   "Disquete",
