@@ -99,7 +99,6 @@ const TOPPING_OPT = [
   "Brigadeiro de Chocolate",
   "Brigadeiro de Amendoim",
   "Coelhinho de Chocolate",
-  "Beijinho",
   "KitKat",
   "Bis Chocolate",
   "Bis Branco",
