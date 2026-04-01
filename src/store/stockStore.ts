@@ -6,11 +6,12 @@ export const SOLD_OUT: Record<string, boolean> = {
   "Miniatura da Alegria": true,
 
   // Miniaturas Pokémon
-  // "Miniatura do Pikachu": true,
+  "Miniatura do Pikachu": true,
   "Miniatura do Mega Venusaur": true,
+  "Miniatura do Charizard": true,
 
   // Pelúcias Pokémon
-  // "Pelúcia do Lapras": true,
+  "Pelúcia do Lapras": true,
   "Pelúcia do Pikachu": true,
 
   // Pelúcias Lilo & Stitch
