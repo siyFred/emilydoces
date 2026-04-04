@@ -72,7 +72,6 @@ const EGGSHELL_OPT = [
   "Chocolate ao Leite",
   "Chocolate Branco",
   "Chocolate Meio Amargo",
-  "Chocolate Branco com Oreo",
   "Chocolate Meio Amargo com Amendoim",
 ];
 
@@ -104,7 +103,6 @@ const TOPPING_OPT = [
   "Bis Branco",
   "Bis Limão",
   "Brownie",
-  "Oreo",
   "Disquete",
   "Amendoim",
   "Jujuba",
