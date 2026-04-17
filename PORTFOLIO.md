@@ -2,7 +2,7 @@
 title: "Emily Doces Commerce: configurador de ovos de Páscoa com checkout no WhatsApp"
 description: "Experiência de compra guiada que transforma personalização de produtos artesanais em pedidos fechados com alta conversão."
 stack: ["Astro", "React", "TypeScript", "Nanostores", "Vercel"]
-images: ["assets/capa.png"]
+images: ["public/capa.png"]
 featured-skills: ["Arquitetura Frontend em Ilhas", "Modelagem de Regras de Produto", "Observabilidade Web"]
 ---
 
