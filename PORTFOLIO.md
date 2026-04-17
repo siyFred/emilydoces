@@ -6,12 +6,12 @@ images: ["public/capa.png"]
 featured-skills: ["Arquitetura Frontend em Ilhas", "Modelagem de Regras de Produto", "Observabilidade Web"]
 ---
 
-## Visão geral
+## Visão Geral
 
 A Emily Doces é uma vitrine de e-commerce sazonal com foco em **personalização de ovos de Páscoa**.  
 O produto foi desenhado para reduzir fricção na escolha de combinações (casca, recheio, adicionais, acessórios) e converter isso em pedido real via WhatsApp.
 
-## Objetivo de negócio
+## Objetivo de Negócio
 
 - Transformar catálogo artesanal em fluxo digital de compra guiada.
 - Minimizar erro de pedido com regras explícitas por tipo de produto.
@@ -79,6 +79,6 @@ Essa decisão elimina complexidade de gateway no MVP e aproveita o canal já ope
 - **Observabilidade de produto** com Vercel Analytics e Speed Insights.
 - **Organização por responsabilidade** (layout, páginas, componentes, stores).
 
-## Resultado técnico
+## Resultado Técnico
 
 Um frontend orientado a conversão, com arquitetura pragmática: estático onde possível, reativo onde necessário, e regras de negócio explícitas para sustentar evolução de catálogo sem reescrever a experiência de compra.
